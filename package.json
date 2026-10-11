@@ -1,0 +1,50 @@
+{
+  "name": "@vera-anchor/verifier",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Independent, read-only verification of verifiable digital evidence",
+  "license": "Apache-2.0",
+  "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": "^22.14.0 || ^24.0.0"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "LICENSE",
+    "NOTICE",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VeraAnchor/vera-anchor-verifier.git"
+  },
+  "homepage": "https://github.com/VeraAnchor/vera-anchor-verifier#readme",
+  "bugs": {
+    "url": "https://github.com/VeraAnchor/vera-anchor-verifier/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "check": "biome check .",
+    "format": "biome check --write .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepack": "npm run build"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.15",
+    "typescript": "6.0.3",
+    "vitest": "5.0.0"
+  }
+}
