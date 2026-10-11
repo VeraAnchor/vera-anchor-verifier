@@ -10,14 +10,13 @@ permissions:
 
 jobs:
   verify:
-    name: Node ${{ matrix.node }} / ${{ runner.os }}
+    name: Node ${{ matrix.node }} / Ubuntu
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         node: ['22', '24']
     steps:
-      # These are initially version-pinned. Run `npm run pin:actions` before first commit.
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
