@@ -32,6 +32,8 @@ jobs:
         run: npm run check
       - name: Type checking
         run: npm run typecheck
+      - name: Verification tests
+        run: npm test
       - name: Build
         run: npm run build
       - name: Package contents
