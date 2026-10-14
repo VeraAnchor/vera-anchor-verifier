@@ -45,7 +45,7 @@ export type ExpectedCommitment =
   | Readonly<{
       key: string;
       kind: "merkle-root";
-      tree_alg: "binary-sorted" | "binary-sorted-v2";
+      tree_alg: "binary-sorted" | "binary-sorted-v2" | "hf-dataset-v1" | "hf-ingest-v1";
       root_hash: string;
       leaf_count: number;
     }>;

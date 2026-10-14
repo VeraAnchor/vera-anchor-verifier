@@ -70,7 +70,7 @@ describe("Ingest v1 independently recomputed bundle and receipt commitments", ()
     expect(receipts?.[0]?.evidence).toEqual(receipts?.[1]?.evidence);
   });
 
-  it("detects altered leaf hash via derived Merkle root but does not pretend to recompute the leaf itself", () => {
+  it("detects altered leaf commitments independently of the stored root", () => {
     const entry = vectors.cases.find((vector) => vector.case_id === "file-set-v1");
     if (!entry) throw new Error("Missing file-set vector");
     const bundle = copy(entry.bundle) as { items: Array<{ leaf_hash: string }> } & Record<string, unknown>;
@@ -79,7 +79,7 @@ describe("Ingest v1 independently recomputed bundle and receipt commitments", ()
     item.leaf_hash = changed(item.leaf_hash);
     const result = verifyIngestV1Bundle(bundle);
     expect(result.ok).toBe(false);
-    expect(result.mismatches.map((mismatch) => mismatch.field)).toContain("merkle.root");
+    expect(result.mismatches.map((mismatch) => mismatch.field)).toContain("items[0].leaf_hash");
   });
 
   it("reports summary and merkle leaf-count inconsistencies", () => {

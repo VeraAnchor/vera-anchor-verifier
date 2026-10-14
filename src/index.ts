@@ -64,3 +64,12 @@ export type {
   IngestV1ReceiptComputed,
   IngestV1Result,
 } from "./profiles/ingest/v1.js";
+
+export { verifyDatasetV1Sources } from "./profiles/dataset/sourceV1.js";
+export type { DatasetV1SourceInput, DatasetV1SourceResult } from "./profiles/dataset/sourceV1.js";
+export { verifyIngestV1Sources } from "./profiles/ingest/sourceV1.js";
+export type { IngestV1SourceInput, IngestV1SourceMaterial, IngestV1SourceResult } from "./profiles/ingest/sourceV1.js";
+export type { SourceV1File, SourceV1Limits, SourceV1Mismatch } from "./profiles/sourceV1Helpers.js";
+
+export { verifyDatasetV1WithIntent, verifyIngestV1WithIntent } from "./verification/sourceIntentV1.js";
+export type { DatasetV1IntentInput, IngestV1IntentInput } from "./verification/sourceIntentV1.js";

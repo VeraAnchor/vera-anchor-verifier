@@ -386,11 +386,25 @@ function computedRoot(items: readonly Item[]): string {
   return root;
 }
 
-/** Check Ingest bundle commitments and declared Merkle root; leaf hashes remain supplied claims. */
+/** Recompute each Ingest leaf from its declared metadata before checking bundle Merkle commitments. */
 export function verifyIngestV1Bundle(input: unknown): IngestV1Result<IngestV1BundleComputed> {
   const parsed = bundle(input);
   const mismatches: IngestV1Mismatch[] = [];
-  const root = parsed.merkle ? computedRoot(parsed.items) : undefined;
+  const recomputedItems = parsed.items.map((entry, index) => {
+    const leafHash = jsonHash("va:ingest:leaf:v1", {
+      item_kind: entry.item_kind,
+      ...(entry.path_rel ? { path_rel: entry.path_rel } : {}),
+      ...(entry.path_hash ? { path_hash: entry.path_hash } : {}),
+      ...(entry.media_type ? { media_type: entry.media_type } : {}),
+      bytes: entry.bytes,
+      sha3_512: entry.sha3_512,
+    });
+    if (entry.leaf_hash !== leafHash) {
+      mismatches.push(mismatch(`items[${index}].leaf_hash`, leafHash, entry.leaf_hash));
+    }
+    return { ...entry, leaf_hash: leafHash };
+  });
+  const root = parsed.merkle ? computedRoot(recomputedItems) : undefined;
   let totalBytes = 0;
   for (const entry of parsed.items) {
     totalBytes += entry.bytes;
