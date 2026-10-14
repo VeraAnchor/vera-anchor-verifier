@@ -41,3 +41,26 @@ export type {
   HfV1HashInput,
   HfV1Material,
 } from "./hf/hashContractV1.js";
+
+export { sha3_512Stream, verifySha3_512Stream } from "./crypto/streamSha3.js";
+export type {
+  ByteChunkSource,
+  Sha3_512StreamHashResult,
+  Sha3_512StreamVerificationResult,
+} from "./crypto/streamSha3.js";
+
+export { verifyDatasetV1Bundle, verifyDatasetV1Receipt } from "./profiles/dataset/v1.js";
+export type {
+  DatasetV1BundleComputed,
+  DatasetV1Mismatch,
+  DatasetV1ReceiptComputed,
+  DatasetV1VerificationResult,
+} from "./profiles/dataset/v1.js";
+
+export { verifyIngestV1Bundle, verifyIngestV1Receipt, verifyIngestV1Pair } from "./profiles/ingest/v1.js";
+export type {
+  IngestV1BundleComputed,
+  IngestV1Mismatch,
+  IngestV1ReceiptComputed,
+  IngestV1Result,
+} from "./profiles/ingest/v1.js";
