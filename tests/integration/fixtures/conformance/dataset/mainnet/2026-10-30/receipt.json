@@ -1,0 +1,414 @@
+{
+  "v": "v1",
+  "kind": "dataset_anchor_receipt",
+  "receipt_id": "ee41afbbcc082a7d7cbd066239e81ee156bf829846ca6da4b7e6bd0f82e1efbe7074955543b9ac29ecef48ca5a58b1538e8d41b910f4ffd0609806ae26d66aa8",
+  "mode": "register_and_anchor",
+  "hedera_network": "mainnet",
+  "dataset_identity": {
+    "dataset_key": "07be0cf7-4cab-40ca-aa70-87840df4d3e7.example.verification.demo.v1",
+    "version_label": "v1",
+    "program": "example"
+  },
+  "rules": {
+    "path_normalization": "posix_rel_no_dotdot",
+    "follow_symlinks": false,
+    "redact_paths": true,
+    "ordering": "path_rel_ascii_asc",
+    "merkle_rule": "dup_last_on_odd"
+  },
+  "evidence": {
+    "dataset_fingerprint": "e751f690339c388e31287c0005301b23379a96880636292ccf83e6d408d8010b0ff7fc3a45957bb8aa2725194688afa5491df16c957158ae59d4ae1ff0bfecfd",
+    "bundle_digest": "21058d6e893f0e5a020336102643d92208d1c324aab60b7ac98094e4b499598dca1642c9f11ca736678fa0715a1ddc735a846636a1b1f6f056e5f1f2e0b0560d",
+    "merkle_root": "d9a3fd8af269f1804865d0128826f60af25102660688af45e0dedd621d6c6a0877a254c7d175c5a407359f92176b3c7666a820834968be7c00671959e0c3e057",
+    "idempotency_key": "2cd3d09cea8f12285a9424889f743bdb5c159fdf8b6f0e16f52a479f9569c330d379f228ea86d00910a0a6f5a098d1a3cf7b7e56cf083e41886a6a71d324934c",
+    "file_count": 1,
+    "total_bytes": 32786
+  },
+  "pointers": {
+    "evidence_pointer": "urn:va:dataset:fingerprint:e751f690339c388e31287c0005301b23379a96880636292ccf83e6d408d8010b0ff7fc3a45957bb8aa2725194688afa5491df16c957158ae59d4ae1ff0bfecfd"
+  },
+  "core": {
+    "dataset": {
+      "dataset_key": "07be0cf7-4cab-40ca-aa70-87840df4d3e7.example.verification.demo.v1",
+      "hedera_network": "mainnet",
+      "org_id": "07be0cf7-4cab-40ca-aa70-87840df4d3e7",
+      "program": "example",
+      "display_name": "Verification Example",
+      "visibility": "public",
+      "active_version": 1,
+      "active_manifest_hash": "7c27e36ae7243256b64f2d16eb78a3d809794c3a325763bc422b0f50fc647cab3f211bbca64e6dd914c9791f009be78d727cc3110204c1dc7ec4f2f09bfd847e"
+    },
+    "version": {
+      "id": "690cddfd-4f4c-434c-8bbe-6b195e59a571",
+      "dataset_key": "07be0cf7-4cab-40ca-aa70-87840df4d3e7.example.verification.demo.v1",
+      "hedera_network": "mainnet",
+      "version": 1,
+      "dataset_fingerprint": "e751f690339c388e31287c0005301b23379a96880636292ccf83e6d408d8010b0ff7fc3a45957bb8aa2725194688afa5491df16c957158ae59d4ae1ff0bfecfd",
+      "matrix_path": "urn:va:dataset:fingerprint:e751f690339c388e31287c0005301b23379a96880636292ccf83e6d408d8010b0ff7fc3a45957bb8aa2725194688afa5491df16c957158ae59d4ae1ff0bfecfd",
+      "artifact_bytes": "32786",
+      "bytes_estimate": "32786",
+      "schema_hash": "76ddacbc7b6321bb1fd5de5fa2c49a2e478ad1794d4085015234f2e23d3aa6cbeefa24b8c278534fdfd505103f4ecce361ab9fbca87834339ac68ab9729dc05e",
+      "manifest_hash": "7c27e36ae7243256b64f2d16eb78a3d809794c3a325763bc422b0f50fc647cab3f211bbca64e6dd914c9791f009be78d727cc3110204c1dc7ec4f2f09bfd847e",
+      "sealed_at": "2026-10-30T04:00:51.630Z",
+      "hcs_topic_id": "0.0.10930266",
+      "hcs_transaction_id": "0.0.9316879@1793332847.304781727",
+      "hcs_message_id": "54@0.0.10930266"
+    },
+    "published": {
+      "published": {
+        "dataset": {
+          "id": "73bb8b3d-d642-4198-9a36-38a83a822e12",
+          "org_id": "07be0cf7-4cab-40ca-aa70-87840df4d3e7",
+          "entity_kind": "dataset",
+          "entity_id": "9241025b-7b93-41d8-9a64-8dd44b6b55bd",
+          "proof_date": "2026-10-30T00:00:00.000Z",
+          "visibility": "public",
+          "share_token": null,
+          "published_at": "2026-10-30T04:00:58.397Z",
+          "published_by": "e49a3393-ccc1-4ad8-9913-4d3cbeaaae0b",
+          "meta": {
+            "proof": {
+              "dataset_key": "07be0cf7-4cab-40ca-aa70-87840df4d3e7.example.verification.demo.v1",
+              "fingerprint": "e751f690339c388e31287c0005301b23379a96880636292ccf83e6d408d8010b0ff7fc3a45957bb8aa2725194688afa5491df16c957158ae59d4ae1ff0bfecfd",
+              "manifest_hash": "7c27e36ae7243256b64f2d16eb78a3d809794c3a325763bc422b0f50fc647cab3f211bbca64e6dd914c9791f009be78d727cc3110204c1dc7ec4f2f09bfd847e"
+            },
+            "source": "explicit",
+            "context": {
+              "program": "example",
+              "dataset_id": "9241025b-7b93-41d8-9a64-8dd44b6b55bd",
+              "visibility": "public",
+              "dataset_key": "07be0cf7-4cab-40ca-aa70-87840df4d3e7.example.verification.demo.v1",
+              "active_version": 1,
+              "hedera_network": "mainnet",
+              "published_version": 1,
+              "active_manifest_hash": "7c27e36ae7243256b64f2d16eb78a3d809794c3a325763bc422b0f50fc647cab3f211bbca64e6dd914c9791f009be78d727cc3110204c1dc7ec4f2f09bfd847e",
+              "published_dataset_version_id": "690cddfd-4f4c-434c-8bbe-6b195e59a571"
+            },
+            "moderation": {
+              "mode": "enforce",
+              "labels": [],
+              "reason": null,
+              "status": "approved",
+              "version": "public_surface_moderation_v1",
+              "checked_at": "2026-10-30T04:00:58.402Z",
+              "input_digest": "sha256:24179568597abb7684912658333c259d9ff1dfa64a5d636fdb02edf3486f324b",
+              "display_policy": "allow",
+              "matched_fields": [],
+              "publish_policy": "allow",
+              "suggested_display_policy": "allow",
+              "suggested_publish_policy": "allow"
+            },
+            "source_hcs": {
+              "topic_id": "0.0.10930266",
+              "topic_name": "dataset_registry_events",
+              "payload_hash": "7c27e36ae7243256b64f2d16eb78a3d809794c3a325763bc422b0f50fc647cab3f211bbca64e6dd914c9791f009be78d727cc3110204c1dc7ec4f2f09bfd847e",
+              "hcs_message_id": "53@0.0.10930266",
+              "sequence_number": null,
+              "hcs_transaction_id": "0.0.9316879@1793332841.110355731",
+              "consensus_timestamp": null
+            },
+            "publication_hedera_network": "mainnet"
+          },
+          "deleted_at": null,
+          "quota": {
+            "allowed": true,
+            "bypassed": false,
+            "usedFallback": false,
+            "primary": {
+              "allowed": true,
+              "bypassed": false,
+              "exceeded": false,
+              "warned": false,
+              "quota_type": "explorer_surface_day",
+              "label": "explorer public surfaces per day",
+              "limit": 25,
+              "used": 1,
+              "remaining": 24,
+              "reset_at": "2026-10-31T00:00:00.000Z",
+              "window_key": "2026-10-30",
+              "window_type": "day",
+              "consumed": true,
+              "unlimited": false,
+              "role": "primary",
+              "status": "ok"
+            },
+            "fallback": null,
+            "effective": {
+              "allowed": true,
+              "bypassed": false,
+              "exceeded": false,
+              "warned": false,
+              "quota_type": "explorer_surface_day",
+              "label": "explorer public surfaces per day",
+              "limit": 25,
+              "used": 1,
+              "remaining": 24,
+              "reset_at": "2026-10-31T00:00:00.000Z",
+              "window_key": "2026-10-30",
+              "window_type": "day",
+              "consumed": true,
+              "unlimited": false,
+              "role": "primary",
+              "status": "ok",
+              "used_fallback": false,
+              "fallback_from_quota_type": "explorer_surface_day"
+            },
+            "consumption": {
+              "consumed_quota_type": "explorer_surface_day",
+              "consumed_role": "primary",
+              "consumed_index": 0,
+              "candidates": [
+                {
+                  "role": "primary",
+                  "index": 0,
+                  "label": "explorer public surfaces per day",
+                  "limit": 25,
+                  "status": "ok",
+                  "warned": false,
+                  "consumed": true,
+                  "reset_at": "2026-10-31T00:00:00.000Z",
+                  "exhausted": false,
+                  "remaining": 24,
+                  "unlimited": false,
+                  "quota_type": "explorer_surface_day",
+                  "window_key": "2026-10-30",
+                  "count_after": 1,
+                  "window_type": "day"
+                }
+              ]
+            }
+          },
+          "quota_consumed": true,
+          "already_published": false,
+          "publication_receipt": {
+            "ok": true,
+            "topic_name": "platform_publishing_events",
+            "hedera_network": "mainnet",
+            "receipt_hash": "11254cbc9def7ca4de9f2c1dc94838f1ecf2bc59686a98dc41a8c2388b47be6db910e465c3dfc5038b0f0f5087b4df2e608b20ced4594ed6d958919c7127f3ab",
+            "base_idempotency_key": "publication:v1:dataset:9241025b-7b93-41d8-9a64-8dd44b6b55bd:2026-10-30:published:1",
+            "idempotency_key": "publication:v1:dataset:9241025b-7b93-41d8-9a64-8dd44b6b55bd:2026-10-30:published:1:state:2026-10-30T04:00:58.397Z",
+            "publication_lifecycle_nonce": "2026-10-30T04:00:58.397Z",
+            "hcs": {
+              "messageId": "51184@0.0.10740907",
+              "transactionId": "0.0.9316879@1793332852.514152090",
+              "topicId": "0.0.10740907",
+              "sequenceNumber": "51184",
+              "dataHash": "6ce90251dd9079e22f1a96ce200566bebb75c1c0a0c2a82723353de3bb71ec1b4db82cc4aecca171ab09a3c117070522946e3367b625a56682bfcaf123fb72fb"
+            }
+          },
+          "moderation": {
+            "status": "approved",
+            "display_policy": "allow",
+            "publish_policy": "allow",
+            "suggested_display_policy": "allow",
+            "suggested_publish_policy": "allow",
+            "labels": [],
+            "reason": null,
+            "matched_fields": [],
+            "input_digest": "sha256:24179568597abb7684912658333c259d9ff1dfa64a5d636fdb02edf3486f324b",
+            "checked_at": "2026-10-30T04:00:58.402Z",
+            "mode": "enforce",
+            "version": "public_surface_moderation_v1"
+          }
+        },
+        "dataset_version": {
+          "id": "420a45da-bba5-4c29-927d-4e3473e00ebd",
+          "org_id": "07be0cf7-4cab-40ca-aa70-87840df4d3e7",
+          "entity_kind": "dataset_version",
+          "entity_id": "690cddfd-4f4c-434c-8bbe-6b195e59a571",
+          "proof_date": "2026-10-30T00:00:00.000Z",
+          "visibility": "public",
+          "share_token": null,
+          "published_at": "2026-10-30T04:00:58.397Z",
+          "published_by": "e49a3393-ccc1-4ad8-9913-4d3cbeaaae0b",
+          "meta": {
+            "proof": {
+              "dataset_key": "07be0cf7-4cab-40ca-aa70-87840df4d3e7.example.verification.demo.v1",
+              "fingerprint": "e751f690339c388e31287c0005301b23379a96880636292ccf83e6d408d8010b0ff7fc3a45957bb8aa2725194688afa5491df16c957158ae59d4ae1ff0bfecfd",
+              "manifest_hash": "7c27e36ae7243256b64f2d16eb78a3d809794c3a325763bc422b0f50fc647cab3f211bbca64e6dd914c9791f009be78d727cc3110204c1dc7ec4f2f09bfd847e"
+            },
+            "source": "explicit",
+            "context": {
+              "version": 1,
+              "col_count": null,
+              "row_count": null,
+              "dataset_id": "9241025b-7b93-41d8-9a64-8dd44b6b55bd",
+              "dataset_key": "07be0cf7-4cab-40ca-aa70-87840df4d3e7.example.verification.demo.v1",
+              "schema_hash": "76ddacbc7b6321bb1fd5de5fa2c49a2e478ad1794d4085015234f2e23d3aa6cbeefa24b8c278534fdfd505103f4ecce361ab9fbca87834339ac68ab9729dc05e",
+              "ingest_source": "hf_local_lib",
+              "bytes_estimate": "32786",
+              "hedera_network": "mainnet",
+              "dataset_version_id": "690cddfd-4f4c-434c-8bbe-6b195e59a571"
+            },
+            "moderation": {
+              "mode": "enforce",
+              "labels": [],
+              "reason": null,
+              "status": "approved",
+              "version": "public_surface_moderation_v1",
+              "checked_at": "2026-10-30T04:01:07.390Z",
+              "input_digest": "sha256:51305c2a1cebcafb2bdc11b02a90197313bd9a4848008c2f0219d6d5190beda5",
+              "display_policy": "allow",
+              "matched_fields": [],
+              "publish_policy": "allow",
+              "suggested_display_policy": "allow",
+              "suggested_publish_policy": "allow"
+            },
+            "source_hcs": {
+              "topic_id": "0.0.10930266",
+              "topic_name": "dataset_registry_events",
+              "payload_hash": "7c27e36ae7243256b64f2d16eb78a3d809794c3a325763bc422b0f50fc647cab3f211bbca64e6dd914c9791f009be78d727cc3110204c1dc7ec4f2f09bfd847e",
+              "hcs_message_id": "54@0.0.10930266",
+              "sequence_number": null,
+              "hcs_transaction_id": "0.0.9316879@1793332847.304781727",
+              "consensus_timestamp": null
+            },
+            "publication_hedera_network": "mainnet"
+          },
+          "deleted_at": null,
+          "quota": {
+            "allowed": true,
+            "bypassed": false,
+            "usedFallback": false,
+            "primary": {
+              "allowed": true,
+              "bypassed": false,
+              "exceeded": false,
+              "warned": false,
+              "quota_type": "explorer_surface_day",
+              "label": "explorer public surfaces per day",
+              "limit": 25,
+              "used": 2,
+              "remaining": 23,
+              "reset_at": "2026-10-31T00:00:00.000Z",
+              "window_key": "2026-10-30",
+              "window_type": "day",
+              "consumed": true,
+              "unlimited": false,
+              "role": "primary",
+              "status": "ok"
+            },
+            "fallback": null,
+            "effective": {
+              "allowed": true,
+              "bypassed": false,
+              "exceeded": false,
+              "warned": false,
+              "quota_type": "explorer_surface_day",
+              "label": "explorer public surfaces per day",
+              "limit": 25,
+              "used": 2,
+              "remaining": 23,
+              "reset_at": "2026-10-31T00:00:00.000Z",
+              "window_key": "2026-10-30",
+              "window_type": "day",
+              "consumed": true,
+              "unlimited": false,
+              "role": "primary",
+              "status": "ok",
+              "used_fallback": false,
+              "fallback_from_quota_type": "explorer_surface_day"
+            },
+            "consumption": {
+              "consumed_quota_type": "explorer_surface_day",
+              "consumed_role": "primary",
+              "consumed_index": 0,
+              "candidates": [
+                {
+                  "role": "primary",
+                  "index": 0,
+                  "label": "explorer public surfaces per day",
+                  "limit": 25,
+                  "status": "ok",
+                  "warned": false,
+                  "consumed": true,
+                  "reset_at": "2026-10-31T00:00:00.000Z",
+                  "exhausted": false,
+                  "remaining": 23,
+                  "unlimited": false,
+                  "quota_type": "explorer_surface_day",
+                  "window_key": "2026-10-30",
+                  "count_after": 2,
+                  "window_type": "day"
+                }
+              ]
+            }
+          },
+          "quota_consumed": true,
+          "already_published": false,
+          "publication_receipt": {
+            "ok": true,
+            "topic_name": "platform_publishing_events",
+            "hedera_network": "mainnet",
+            "receipt_hash": "fb1bcd38747b1c0392f6e483cc7467a3d5460c077c7ba15046c2f1ea287c0d86eae6383f51588af9a1af6ae36b1eb558c4bfd8e2e8650fd0515ab48a63d40722",
+            "base_idempotency_key": "publication:v1:dataset_version:690cddfd-4f4c-434c-8bbe-6b195e59a571:2026-10-30:published:1",
+            "idempotency_key": "publication:v1:dataset_version:690cddfd-4f4c-434c-8bbe-6b195e59a571:2026-10-30:published:1:state:2026-10-30T04:00:58.397Z",
+            "publication_lifecycle_nonce": "2026-10-30T04:00:58.397Z",
+            "hcs": {
+              "messageId": "51187@0.0.10740907",
+              "transactionId": "0.0.9316879@1793332861.048755640",
+              "topicId": "0.0.10740907",
+              "sequenceNumber": "51187",
+              "dataHash": "9c3edd2ca4c7b7e59fe41c749d035b63eb956e2ef2106f2325cc7ec87d793d8da24d18b0ba822828f795269c061f24a4f5aca57cc9beab2f88899baaa53be8ab"
+            }
+          },
+          "moderation": {
+            "status": "approved",
+            "display_policy": "allow",
+            "publish_policy": "allow",
+            "suggested_display_policy": "allow",
+            "suggested_publish_policy": "allow",
+            "labels": [],
+            "reason": null,
+            "matched_fields": [],
+            "input_digest": "sha256:51305c2a1cebcafb2bdc11b02a90197313bd9a4848008c2f0219d6d5190beda5",
+            "checked_at": "2026-10-30T04:01:07.390Z",
+            "mode": "enforce",
+            "version": "public_surface_moderation_v1"
+          }
+        }
+      },
+      "target": {
+        "dataset_id": "9241025b-7b93-41d8-9a64-8dd44b6b55bd",
+        "dataset_key": "07be0cf7-4cab-40ca-aa70-87840df4d3e7.example.verification.demo.v1",
+        "dataset_version_id": "690cddfd-4f4c-434c-8bbe-6b195e59a571",
+        "proof_date": "2026-10-30",
+        "meta": {
+          "source": "explicit",
+          "source_hcs": {
+            "hcs_transaction_id": "0.0.9316879@1793332847.304781727",
+            "hcs_message_id": "54@0.0.10930266",
+            "topic_id": "0.0.10930266",
+            "topic_name": "dataset_registry_events",
+            "sequence_number": null,
+            "consensus_timestamp": null,
+            "payload_hash": "7c27e36ae7243256b64f2d16eb78a3d809794c3a325763bc422b0f50fc647cab3f211bbca64e6dd914c9791f009be78d727cc3110204c1dc7ec4f2f09bfd847e"
+          },
+          "proof": {
+            "dataset_key": "07be0cf7-4cab-40ca-aa70-87840df4d3e7.example.verification.demo.v1",
+            "manifest_hash": "7c27e36ae7243256b64f2d16eb78a3d809794c3a325763bc422b0f50fc647cab3f211bbca64e6dd914c9791f009be78d727cc3110204c1dc7ec4f2f09bfd847e",
+            "fingerprint": "e751f690339c388e31287c0005301b23379a96880636292ccf83e6d408d8010b0ff7fc3a45957bb8aa2725194688afa5491df16c957158ae59d4ae1ff0bfecfd"
+          },
+          "context": {
+            "hedera_network": "mainnet",
+            "dataset_id": "9241025b-7b93-41d8-9a64-8dd44b6b55bd",
+            "dataset_version_id": "690cddfd-4f4c-434c-8bbe-6b195e59a571",
+            "dataset_key": "07be0cf7-4cab-40ca-aa70-87840df4d3e7.example.verification.demo.v1",
+            "version": 1,
+            "schema_hash": "76ddacbc7b6321bb1fd5de5fa2c49a2e478ad1794d4085015234f2e23d3aa6cbeefa24b8c278534fdfd505103f4ecce361ab9fbca87834339ac68ab9729dc05e",
+            "row_count": null,
+            "col_count": null,
+            "bytes_estimate": "32786",
+            "ingest_source": "hf_local_lib"
+          }
+        }
+      }
+    },
+    "certificate": {
+      "attempted": false,
+      "skipped": true,
+      "requested": false,
+      "reason": "dataset_certificate_opted_out"
+    }
+  }
+}

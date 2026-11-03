@@ -2,6 +2,10 @@ import { describe, expect, it } from "vitest";
 import { resolveExplorerExecutionV1 } from "../../src/resolvers/explorerExecutionV1.js";
 import { resolveExecutionHederaV1 } from "../../src/resolvers/executionMirrorV1.js";
 import { triangulatePublicExecutionV1 } from "../../src/triangulation/executionPublicV1.js";
+import { triangulateExecutionWithPolicyV1, assessPortableVerificationPolicyV1 } from "../../src/policy/evaluateV1.js";
+import { verifyExecutionV1WithIntent } from "../../src/profiles/execution/verificationV1.js";
+import { VERIFICATION_POLICY_SCHEMA_VERSION, type VerificationPolicyV1 } from "../../src/policy/contractV1.js";
+import { validatePortableVerificationReportV1 } from "../../src/reports/validationV1.js";
 
 const JOB = "11111111-1111-4111-8111-111111111111";
 const OTHER = "22222222-2222-4222-8222-222222222222";
@@ -23,9 +27,11 @@ const evidence = () => ({
 const resultEvidence = () => ({ ...evidence(), execution: { ...evidence().execution, result_id: RESULT },
   result_evidence: { result_id: RESULT, digest: HASH_A, hcs: { transaction_id: "0.0.15@1792033599.2" } },
 });
+
 function json(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json" } });
 }
+
 function mock(options: {
   publicEvidence?: any;
   publicResult?: any;
@@ -61,13 +67,13 @@ function mock(options: {
 }
 
 describe("Independent public execution triangulation", () => {
-  it("resolves job-scoped public and Hedera locators without claiming publication payload integrity", async () => {
+  it("resolves job-scoped public and Hedera locators without exposing a retired publication binding field", async () => {
     const m = mock();
     const out = await triangulatePublicExecutionV1(m.config, assertion(evidence()));
     expect(out.status).toBe("resolved");
     expect(out.public_record_acquisition).toBe("resolved");
     expect(out.hedera_resolution).toBe("resolved");
-    expect(out.publication_payload_binding).toBe("not_checked");
+    expect(out).not.toHaveProperty("publication_payload_binding");
     expect(out.comparison?.relationships.find((x) => x.id === "public_record_hedera")?.fact_comparisons
       .map((x) => x.outcome)).toEqual(["pass", "pass", "pass"]);
     expect(m.calls).toHaveLength(5);
@@ -201,4 +207,42 @@ describe("Independent public execution triangulation", () => {
     expect(m.calls).toHaveLength(1);
   });
 
+});
+
+describe("execution public-policy conformance", () => {
+  const input = () => ({ ...assertion(evidence()), profile: "sage-standards-v1" as const,
+    expected_program: "sage" });
+  function policy(): VerificationPolicyV1 {
+    const verified = verifyExecutionV1WithIntent(input());
+    return { schema_version: VERIFICATION_POLICY_SCHEMA_VERSION,
+      subject: verified.intent.subject, report_kind: "execution_triangulation",
+      required_checks: ["intent.subject"],
+      execution_scope: verified.verification_scope };
+  }
+
+  it("emits a valid portable report without exposing retired publication binding claims", async () => {
+    const m = mock();
+    const result = await triangulateExecutionWithPolicyV1(m.config, input(), policy());
+    expect(result.report.kind).toBe("execution_triangulation");
+    expect(validatePortableVerificationReportV1(result.report).status).toBe("valid");
+    expect(result.report.context.public_execution).toMatchObject({ hedera_resolution: "resolved" });
+    expect(result.report.context.public_execution).not.toHaveProperty("publication_payload_binding");
+    expect(result.policy.requirements.find((r) => r.key === "assurance.hedera_consensus_authentication")).toBeUndefined();
+    expect(assessPortableVerificationPolicyV1(result.report, policy()).decision).not.toBe("allow");
+  });
+
+  it("never grants public acceptance when Mirror evidence is missing", async () => {
+    const m = mock({ missingMessage: true });
+    const result = await triangulateExecutionWithPolicyV1(m.config, input(), policy());
+    expect(result.policy.decision).not.toBe("allow");
+    expect(result.policy.reason_codes).toContain("POLICY_PUBLIC_EVIDENCE_INCOMPLETE");
+  });
+
+  it("rejects wrong-network relying-party policies without public fetches", async () => {
+    const m = mock();
+    await expect(triangulateExecutionWithPolicyV1(m.config, input(), {
+      ...policy(), subject: { kind: "execution", id: JOB, hedera_network: "mainnet" },
+    })).rejects.toThrow(/policy intent/);
+    expect(m.calls).toHaveLength(0);
+  });
 });

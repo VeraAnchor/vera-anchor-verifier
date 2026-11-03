@@ -1,0 +1,112 @@
+{
+  "v": "v1",
+  "kind": "ingest_receipt",
+  "mode": "register_and_anchor",
+  "hedera_network": "mainnet",
+  "identity": {
+    "object_key": "hf.first-ingest.demo",
+    "object_kind": "file",
+    "version_label": "v1",
+    "program": "hash_factory"
+  },
+  "rules": {
+    "path_normalization": "posix_rel_no_dotdot",
+    "follow_symlinks": false,
+    "redact_paths": false,
+    "normalize_line_endings": false,
+    "ordering": "deterministic_sort_v1",
+    "merkle_rule": "dup_last_on_odd"
+  },
+  "evidence": {
+    "fingerprint": "7b3eb268ac387fa604335f32834349b81c61468e740230025ee652ad65e4280b555f47f0d2db74556d95d48bbe26da16c7d8751b0e0f8b373ee33f170c5bb0f5",
+    "bundle_digest": "a80892b2f77853074c8534146c95429a72ff96746e91a1daba73af5ee706f04bc7a4d93c27badeaf034bec1ccf19562dff0e1e10ee492cc8090c855d7649f542",
+    "merkle_root": "af689d911487c83afaa36cc16523790275b4664c94193d1e345e6fc68a57580704d278998a89dcfade2b93f3aa4f0f5b884f4e3380395e353b561823df17542c",
+    "idempotency_key": "abdafc70d75793d6e7173c149112c2e3d847769647ba0a30ee2aa63d770c89f79acaa015a8db81d26c69e2d510def06d3dc7480c7792b8a21f1a83864823afd8",
+    "item_count": 1,
+    "total_bytes": 71
+  },
+  "anchor": {
+    "domain": "hf:ingest|org:07be0cf7-4cab-40ca-aa70-87840df4d3e7",
+    "proof_date": "2026-10-30"
+  },
+  "pointers": {
+    "evidence_pointer": "urn:va:file:sha3-512:5a296115fa8ef838797d9168ada7d96ed0c824441fa1efd5b330ea37bb0bfa9400ce60cc437ab7b47b4d91033acde41d2c4294cc7ae6195e7378fd4ba27778d7"
+  },
+  "metadata": {
+    "source": "hf-ui-onboarding",
+    "flow": "first_ingest",
+    "title": "Verification Example",
+    "description": "Ingest verification example for the Vera Anchor Verifier JS SDK"
+  },
+  "core": {
+    "receipt_anchor": {
+      "id": "8c05a623-a217-44de-9f82-70b1190330e6",
+      "proof_date": "2026-10-30T00:00:00.000Z",
+      "hedera_network": "mainnet",
+      "domain": "hf:ingest|org:07be0cf7-4cab-40ca-aa70-87840df4d3e7",
+      "anchor_kind": "custom",
+      "root_id": null,
+      "root_hash": null,
+      "payload_type": "ingest_receipt_v1",
+      "payload_hash": "8dfc39c5ace76b2ac6c9f670b483cb71b42f10fd2acf1c0497fa2b2cc44b228871c18fbe77ae4e92e27b429738377d48257f0122253df691a6ff6c771d9c3792",
+      "payload_bytes": "1607",
+      "leaf_id": "b3df9d2c-dfe2-4daa-b189-f59279a2f29a",
+      "leaf_hash": "8ce748ed52a162826cfa16b09a94dfe3e5a51aab10764994d64cc9847193ef55493c77a70b34f25b6ba69a4d7ae876bcc86ec09bc30cdecd1ba71690158d1b64",
+      "anchor_hash": "f6088f47bfebe723c41956a41f11c804120619bee78b2287080ee8f2364aebeabb7c340d5beac77c114c0be4f061eac784aeb8c1853588e4f623aeda0dfcc978",
+      "hcs_topic_id": "0.0.10930267",
+      "hcs_transaction_id": "0.0.9316879@1793376643.011611504",
+      "hcs_message_id": "5@0.0.10930267",
+      "status": "published",
+      "published_at": "2026-10-30T16:10:51.690Z",
+      "confirmed_at": null,
+      "created_at": "2026-10-30T16:10:38.930Z",
+      "updated_at": "2026-10-30T16:10:38.930Z",
+      "publish": {
+        "hedera_network": "mainnet",
+        "topic_key": "MERKLE_ANCHOR_EVENTS"
+      },
+      "certificate": {
+        "attempted": false,
+        "skipped": true,
+        "issued": false,
+        "deduped": false,
+        "reason": "merkle_certificate_anchor_kind_not_supported"
+      }
+    },
+    "root_anchor": {
+      "id": "6d76e547-7803-4d6e-9b6c-7e8cf1692caf",
+      "proof_date": "2026-10-30T00:00:00.000Z",
+      "hedera_network": "mainnet",
+      "domain": "hf:ingest|org:07be0cf7-4cab-40ca-aa70-87840df4d3e7",
+      "anchor_kind": "root",
+      "root_id": "32acf859-0390-4a44-bd40-6798939be87a",
+      "root_hash": "8ce748ed52a162826cfa16b09a94dfe3e5a51aab10764994d64cc9847193ef55493c77a70b34f25b6ba69a4d7ae876bcc86ec09bc30cdecd1ba71690158d1b64",
+      "payload_type": null,
+      "payload_hash": null,
+      "payload_bytes": null,
+      "leaf_id": null,
+      "leaf_hash": null,
+      "anchor_hash": "7a470b64211da331f51c3d726956ee1f87fef5778c0b91a6556c611bacc3fd8b51fee18edd4b3a242b69b8806170db46c558932fe04ca7c706b494815a727e3d",
+      "hcs_topic_id": "0.0.10930267",
+      "hcs_transaction_id": "0.0.9316879@1793376660.853754958",
+      "hcs_message_id": "7@0.0.10930267",
+      "status": "published",
+      "published_at": "2026-10-30T16:11:09.906Z",
+      "confirmed_at": null,
+      "created_at": "2026-10-30T16:11:02.333Z",
+      "updated_at": "2026-10-30T16:11:02.333Z",
+      "publish": {
+        "hedera_network": "mainnet",
+        "topic_key": "MERKLE_ANCHOR_EVENTS"
+      },
+      "certificate": {
+        "attempted": false,
+        "skipped": true,
+        "issued": false,
+        "deduped": false,
+        "reason": "merkle_certificate_not_eligible_for_source"
+      }
+    }
+  },
+  "receipt_id": "3d12f7fd132784f918b0d7aae21e446f9a287ab704e2fbfacdbf02e8014a986443a59b36561573decefb85c3e4e310f03d7d9e91dcd93e82a3a4bbf98a3d9aa8"
+}

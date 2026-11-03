@@ -165,17 +165,15 @@ export type { Hcs26MemoV1, Hcs26VersionRegisterV1, Hcs26SkillManifestV1,
 export { resolveHcs13SchemaV1 } from "./resolvers/hcs13MirrorV1.js";
 export type { Hcs13MirrorV1Request, Hcs13MirrorV1Result } from "./resolvers/hcs13MirrorV1.js";
 
-// Historical HCS-26 discovery -> version registration -> HCS-1 skill manifest.
+// Historical HCS-26 discovery -> version registration -> HCS-1 skill manifest + declared files.
 export { resolveHcs26SkillVersionV1 } from "./resolvers/hcs26MirrorV1.js";
-export type { Hcs26MirrorV1Request, Hcs26MirrorV1Result } from "./resolvers/hcs26MirrorV1.js";
+export type { Hcs26MirrorV1Request, Hcs26MirrorV1Result, Hcs26ManifestFileResolutionV1,
+  Hcs26ManifestFilesResolutionV1 } from "./resolvers/hcs26MirrorV1.js";
 
 // SDK-owned online integration: exact HCS-11/14, HCS-13 and HCS-26 reference
 // observations augment the offline SAGE report without trusting producer summaries.
 export { verifyExecutionWithIndependentStandardsV1 } from "./profiles/execution/independentStandardsV1.js";
 export type { IndependentStandardsV1Item, IndependentStandardsV1Report } from "./profiles/execution/independentStandardsV1.js";
-
-export { prepareExecutionTriangulationV1, EXECUTION_HEDERA_OBSERVATION_V1_ID } from "./triangulation/executionPlanV1.js";
-export type { ExecutionHederaTargetV1, ExecutionTriangulationPlanV1 } from "./triangulation/executionPlanV1.js";
 
 export { resolveExplorerExecutionV1 } from "./resolvers/explorerExecutionV1.js";
 export type { ExplorerExecutionV1Request, ExplorerExecutionV1Result } from "./resolvers/explorerExecutionV1.js";
@@ -183,3 +181,22 @@ export { resolveExecutionHederaV1 } from "./resolvers/executionMirrorV1.js";
 export type { ExecutionMirrorV1Result } from "./resolvers/executionMirrorV1.js";
 export { triangulatePublicExecutionV1 } from "./triangulation/executionPublicV1.js";
 export type { PublicExecutionTriangulationV1Config, PublicExecutionTriangulationV1Result } from "./triangulation/executionPublicV1.js";
+
+export { VERIFICATION_CORE_SCHEMA_VERSION, canonicalizeVerificationCoreV1,
+  computeVerificationCoreDigestV1 } from "./reports/coreV1.js";
+
+export { PORTABLE_VERIFICATION_REPORT_SCHEMA_VERSION, createPortableVerificationReportV1,
+  canonicalizePortableVerificationReportV1, computePortableVerificationReportDigestV1 } from "./reports/portableV1.js";
+export type { PortableVerificationReportV1, PortableVerificationReportV1Input } from "./reports/portableV1.js";
+
+export { validatePortableVerificationReportV1, comparePortableVerificationReportsV1 } from "./reports/validationV1.js";
+export type { PortableVerificationReportValidationV1, PortableVerificationReportComparisonV1 } from "./reports/validationV1.js";
+
+// Exact policy evaluation. Saved reports remain unauthenticated and cannot grant allow.
+export { VERIFICATION_POLICY_SCHEMA_VERSION } from "./policy/contractV1.js";
+export type { VerificationPolicyAssuranceV1, VerificationPolicyV1, VerificationPolicyRequirementV1,
+  VerificationPolicyDecisionV1, VerificationPolicyWorkflowV1 } from "./policy/contractV1.js";
+export { assessPortableVerificationPolicyV1, verifyDatasetWithPolicyV1,
+  verifyIngestWithPolicyV1, verifyExecutionWithPolicyV1,
+  triangulateDatasetWithPolicyV1, triangulateIngestWithPolicyV1,
+  triangulateExecutionWithPolicyV1, verifyExecutionStandardsWithPolicyV1 } from "./policy/evaluateV1.js";

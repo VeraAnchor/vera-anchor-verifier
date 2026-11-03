@@ -51,12 +51,6 @@ export type IndependentStandardsV1Report = ExecutionV1Report & Readonly<{
     status: "verified" | "failed" | "unavailable" | "not_performed";
     assurance: "mirror_corroborated" | "not_established";
     items: readonly IndependentStandardsV1Item[];
-    /** This pass DOES NOT mean DID-controller control or historical account memo validity. */
-    did_controller_authentication: "not_checked";
-    hedera_consensus_authentication: "not_checked";
-    historical_account_memo_binding: "not_checked";
-    manifest_files_resolution: "not_checked";
-    json_schema_instance_validation: "not_checked";
   }>;
 }>;
 
@@ -376,11 +370,7 @@ export async function verifyExecutionWithIndependentStandardsV1(
     findings: Object.freeze(findings),
     independent_standards: Object.freeze({ network: net, status: state,
       assurance: state === "verified" ? "mirror_corroborated" as const : "not_established" as const,
-      items: Object.freeze(items), did_controller_authentication: "not_checked" as const,
-      hedera_consensus_authentication: "not_checked" as const,
-      historical_account_memo_binding: "not_checked" as const,
-      manifest_files_resolution: "not_checked" as const,
-      json_schema_instance_validation: "not_checked" as const,
+      items: Object.freeze(items),
     }),
   });
 }

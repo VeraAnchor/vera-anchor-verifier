@@ -1,4 +1,3 @@
-
 import { compress as zstdCompress, decompress as zstdDecompress } from "@mongodb-js/zstd";
 import { createHash } from "node:crypto";
 import { describe, expect, it, vi } from "vitest";
@@ -14,17 +13,20 @@ const schemaTopic = "0.0.5002";
 const discoveryTopic = "0.0.6001";
 const versionTopic = "0.0.6002";
 const manifestTopic = "0.0.6003";
+const skillFileTopic = "0.0.6004";
 const publisher = "0.0.6999";
 const schema = finalizeHcs13SchemaV1({
   $schema: "https://json-schema.org/draft/2020-12/schema",
   type: "object", properties: { count: { type: "integer", minimum: 0 } },
   required: ["count"],
 });
+const skillFile = Buffer.from("# Capability\n");
+const skillFileSha256 = createHash("sha256").update(skillFile).digest("hex");
 const manifest = finalizeHcs26SkillManifestV1({
   name: "Independent agent capability", description: "Pinned HCS-26 skill",
   version: "1.2.3", license: "MIT", author: "Independent Author",
-  files: [{ path: "SKILL.md", hrl: "hcs://1/0.0.6004",
-    sha256: "a".repeat(64), mime: "text/markdown" }],
+  files: [{ path: "SKILL.md", hrl: `hcs://1/${skillFileTopic}`,
+    sha256: skillFileSha256, mime: "text/markdown" }],
 });
 
 function b64(raw: string | Uint8Array): string { return Buffer.from(raw).toString("base64"); }
@@ -100,6 +102,7 @@ async function hcs26Fixture(overrides: Readonly<{
         t_id: manifestTopic, checksum: `sha256:${overrides.checksum ?? manifest.sha256}`,
         status: overrides.status ?? "deprecated" })) },
     ...(await contentRoutes(manifestTopic, overrides.manifestBytes ?? Buffer.from(manifest.canonical_payload))),
+    ...(await contentRoutes(skillFileTopic, skillFile)),
   };
   const fetch_impl = vi.fn(async (url: string | URL | Request) => {
     const path = String(url);
@@ -129,6 +132,7 @@ describe("HCS-13 exact historical schema resolution", () => {
     expect(transport.urls).toHaveLength(4);
     expect(Object.isFrozen(result)).toBe(true);
   });
+
   it("rejects topic substitution before reading schema content", async () => {
     const transport = await hcs13Fixture({ target: "0.0.999" });
     const result = await resolveHcs13SchemaV1(transport, { ...schemaRequest,
@@ -136,11 +140,13 @@ describe("HCS-13 exact historical schema resolution", () => {
     expect(result).toMatchObject({ status: "conflict", reason_code: "HCS2_TARGET_MISMATCH" });
     expect(transport.urls).toHaveLength(2);
   });
+
   it("rejects a caller-expected schema hash mismatch", async () => {
     const result = await resolveHcs13SchemaV1(await hcs13Fixture(), { ...schemaRequest,
       expected_schema_sha256: "f".repeat(64) }, decodeOptions);
     expect(result).toMatchObject({ status: "conflict", reason_code: "HCS1_EXPECTED_CHECKSUM_MISMATCH" });
   });
+
   it("does not claim pinned canonical schema validity for a noncanonical publication", async () => {
     const raw = Buffer.from(JSON.stringify({ required: ["count"], type: "object",
       $schema: "https://json-schema.org/draft/2020-12/schema",
@@ -148,11 +154,13 @@ describe("HCS-13 exact historical schema resolution", () => {
     const result = await resolveHcs13SchemaV1(await hcs13Fixture({ schemaBytes: raw }), schemaRequest, decodeOptions);
     expect(result).toMatchObject({ status: "unsupported", reason_code: "HCS13_SCHEMA_CONTENT_NOT_CANONICAL" });
   });
+
   it("distinguishes missing exact registry entry", async () => {
     const result = await resolveHcs13SchemaV1(await hcs13Fixture({ missing:
       `${base}/topics/${hcs13Registry}/messages/7` }), schemaRequest, decodeOptions);
     expect(result).toMatchObject({ status: "unavailable", reason_code: "HCS2_REGISTER_NOT_FOUND" });
   });
+
   it("rejects malformed historical sequence without reading HCS-1", async () => {
     const result = await resolveHcs13SchemaV1(await hcs13Fixture({ invalidSequence: 8 }), schemaRequest, decodeOptions);
     expect(result).toMatchObject({ status: "invalid", reason_code: "HCS2_MESSAGE_SCOPE_INVALID" });
@@ -160,7 +168,7 @@ describe("HCS-13 exact historical schema resolution", () => {
 });
 
 describe("HCS-26 historical capability version resolution", () => {
-  it("resolves discovery UID -> exact version register -> integrity checked SKILL.json", async () => {
+  it("resolves discovery UID -> exact version register -> integrity checked SKILL.json and declared files", async () => {
     const transport = await hcs26Fixture();
     const result = await resolveHcs26SkillVersionV1(transport, { ...skillRequest,
       expected_account_id: publisher, expected_version_topic_id: versionTopic, expected_skill_uid: 42,
@@ -170,19 +178,25 @@ describe("HCS-26 historical capability version resolution", () => {
       skill_uid: 42, version: "1.2.3", publisher_account_id: publisher,
       version_topic_id: versionTopic, historical_version_status: "deprecated",
       manifest_reference: `hcs://1/${manifestTopic}`, manifest_sha256: manifest.sha256,
-      content_sha256: manifest.sha256, manifest_files_resolution: "not_checked",
-      discovery_metadata_resolution: "not_checked", assurance: "mirror_corroborated",
+      content_sha256: manifest.sha256, assurance: "mirror_corroborated",
       registry_memo_temporal_scope: "current_observation",
       discovery_consensus_timestamp_exact: "1792039124.000000001",
-      version_consensus_timestamp_exact: "1792039130.000000010" });
-    expect(transport.urls).toHaveLength(6);
+      version_consensus_timestamp_exact: "1792039130.000000010",
+      manifest_files: { status: "resolved", reason_code: null,
+        declared_file_count: 1, resolved_file_count: 1, total_bytes: skillFile.byteLength,
+        files: [{ path: "SKILL.md", reference: `hcs://1/${skillFileTopic}`,
+          expected_sha256: skillFileSha256, observed_sha256: skillFileSha256,
+          byte_length: skillFile.byteLength, status: "resolved", reason_code: null }] } });
+    expect(transport.urls).toHaveLength(8);
   });
+
   it("rejects caller UID conflicting with discovery sequence before any Mirror reads", async () => {
     const transport = await hcs26Fixture();
     const out = await resolveHcs26SkillVersionV1(transport, { ...skillRequest, expected_skill_uid: 9 }, decodeOptions);
     expect(out).toMatchObject({ status: "conflict", reason_code: "HCS26_SKILL_UID_MISMATCH" });
     expect(transport.urls).toHaveLength(0);
   });
+
   it("rejects publisher account substitution before reading version registry", async () => {
     const transport = await hcs26Fixture({ account: "0.0.777" });
     const out = await resolveHcs26SkillVersionV1(transport, { ...skillRequest,
@@ -190,6 +204,7 @@ describe("HCS-26 historical capability version resolution", () => {
     expect(out).toMatchObject({ status: "conflict", reason_code: "HCS26_PUBLISHER_ACCOUNT_MISMATCH" });
     expect(transport.urls).toHaveLength(2);
   });
+
   it("rejects a discovery-substituted version topic before following it", async () => {
     const transport = await hcs26Fixture({ versionTopic: "0.0.6666" });
     const result = await resolveHcs26SkillVersionV1(transport, { ...skillRequest,
@@ -197,42 +212,49 @@ describe("HCS-26 historical capability version resolution", () => {
     expect(result).toMatchObject({ status: "conflict", reason_code: "HCS26_VERSION_TOPIC_MISMATCH" });
     expect(transport.urls).toHaveLength(2);
   });
+
   it("rejects wrong registry type memo", async () => {
     const transport = await hcs26Fixture({ versionMemo: "hcs-26:0:86400:0" });
     const out = await resolveHcs26SkillVersionV1(transport, skillRequest, decodeOptions);
     expect(out).toMatchObject({ status: "invalid", reason_code: "HCS26_REGISTRY_TYPE_MISMATCH" });
     expect(transport.urls).toHaveLength(3);
   });
+
   it("rejects a different skill UID in the historical version register", async () => {
     const transport = await hcs26Fixture({ skillUid: 41 });
     const out = await resolveHcs26SkillVersionV1(transport, skillRequest, decodeOptions);
     expect(out).toMatchObject({ status: "conflict", reason_code: "HCS26_SKILL_UID_MISMATCH" });
     expect(transport.urls).toHaveLength(4);
   });
+
   it("rejects a different requested version before HCS-1 retrieval", async () => {
     const transport = await hcs26Fixture();
     const out = await resolveHcs26SkillVersionV1(transport, { ...skillRequest, expected_version: "9.9.9" }, decodeOptions);
     expect(out).toMatchObject({ status: "conflict", reason_code: "HCS26_VERSION_MISMATCH" });
     expect(transport.urls).toHaveLength(4);
   });
+
   it("rejects a version-register checksum inconsistent with the fetched manifest", async () => {
     const out = await resolveHcs26SkillVersionV1(await hcs26Fixture({ checksum: "f".repeat(64) }), skillRequest, decodeOptions);
     expect(out).toMatchObject({ status: "conflict", reason_code: "HCS26_CHECKSUM_MISMATCH" });
   });
+
   it("does not claim pinned manifest publication for noncanonical SKILL.json bytes", async () => {
     const raw = Buffer.from(JSON.stringify({
-      files: [{ path: "SKILL.md", hrl: "hcs://1/0.0.6004", sha256: "a".repeat(64), mime: "text/markdown" }],
+      files: [{ path: "SKILL.md", hrl: `hcs://1/${skillFileTopic}`, sha256: skillFileSha256, mime: "text/markdown" }],
       author: "Independent Author", license: "MIT", version: "1.2.3",
       description: "Pinned HCS-26 skill", name: "Independent agent capability",
     }));
     const out = await resolveHcs26SkillVersionV1(await hcs26Fixture({ manifestBytes: raw }), skillRequest, decodeOptions);
     expect(out).toMatchObject({ status: "unsupported", reason_code: "HCS26_MANIFEST_CONTENT_NOT_CANONICAL" });
   });
+
   it("preserves missing historical entries as unavailable", async () => {
     const out = await resolveHcs26SkillVersionV1(await hcs26Fixture({ missing:
       `${base}/topics/${versionTopic}/messages/3` }), skillRequest, decodeOptions);
     expect(out).toMatchObject({ status: "unavailable", reason_code: "HCS26_REGISTRY_ENTRY_NOT_FOUND" });
   });
+
   it("rejects untrusted URL, invalid network and unbounded expected digests before I/O", async () => {
     const transport = await hcs26Fixture();
     await expect(resolveHcs26SkillVersionV1(transport, { ...skillRequest,

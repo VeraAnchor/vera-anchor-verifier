@@ -1,13 +1,18 @@
-
 import { createHash } from "node:crypto";
+import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import * as zlib from "node:zlib";
 import { compress as zstdCompress, decompress as zstdDecompress } from "@mongodb-js/zstd";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import { runVerifierCliV1 } from "../../src/cli/commandV1.js";
+import { VERIFICATION_POLICY_SCHEMA_VERSION } from "../../src/policy/contractV1.js";
+import { computeExecutionDomainSeparatedSha3_512 } from "../../src/profiles/execution/recomputationV1.js";
 import { verifyExecutionWithIndependentStandardsV1 } from "../../src/profiles/execution/independentStandardsV1.js";
 import { buildHcs14DidUaidV1 } from "../../src/standards/hcs/hcs14V1.js";
 import { canonicalHcsJsonV1 } from "../../src/standards/hcs/jsonCanonicalV1.js";
 import { finalizeHcs13SchemaV1 } from "../../src/standards/hcs/hcs13V1.js";
 import { finalizeHcs26SkillManifestV1 } from "../../src/standards/hcs/hcs26V1.js";
-
 import type { ExecutionV1Input } from "../../src/profiles/execution/verificationV1.js";
 
 const BASE = "https://testnet.mirrornode.hedera.com/api/v1";
@@ -46,6 +51,7 @@ function registry(routes: Routes, topic: string, seq: number, memo: string, mess
 async function fixture() {
   const routes: Routes = {};
   const requests: string[] = [];
+
   async function agent(i: 1 | 2) {
     const account = `0.0.${7100 + i}`;
     const registryTopic = `0.0.${7000 + i}`;
@@ -56,26 +62,33 @@ async function fixture() {
     const profile = canonicalHcsJsonV1({ version: "1.1", type: 1,
       display_name: `Agent ${i}`, uaid,
       aiAgent: { type: 1, capabilities: [0], model: "agent" } }, 128 * 1024);
+
     routes[`${BASE}/accounts/${account}`] = { account, memo: `hcs-11:hcs://2/${registryTopic}` };
     registry(routes, registryTopic, 1, "hcs-2:0:86400",
       { p: "hcs-2", op: "register", t_id: profileTopic });
     await hcs1(routes, profileTopic, Buffer.from(profile));
+
     return { logical_id: `agent${i}`, base_did: did, hcs14_uaid: uaid,
       hcs11: { account_id: account, profile_registry_topic_id: registryTopic,
         profile_registry_sequence: 1, profile_hcs1_ref: `hcs://1/${profileTopic}`,
         profile_checksum_sha256: sha(profile) } };
   }
+
   const requester = await agent(1);
   const executor = await agent(2);
   const schema = finalizeHcs13SchemaV1({ type: "object", properties: { value: { type: "integer" } } });
+
   registry(routes, "0.0.9001", 7, "hcs-2:0:86400",
     { p: "hcs-2", op: "register", t_id: "0.0.9002" });
   await hcs1(routes, "0.0.9002", Buffer.from(schema.canonical_payload));
+
   const commit = "a".repeat(40);
+  const skillFile = Buffer.from("# Capability\n");
   const manifest = finalizeHcs26SkillManifestV1({ name: "Capability", description: "A capability",
     version: "1.0.0", license: "MIT", author: "Person", commit,
     files: [{ path: "SKILL.md", hrl: "hcs://1/0.0.8100",
-      sha256: "b".repeat(64), mime: "text/markdown" }] });
+      sha256: sha(skillFile), mime: "text/markdown" }] });
+
   registry(routes, "0.0.8001", 42, "hcs-26:0:86400:0",
     { p: "hcs-26", op: "register", t_id: "0.0.8002",
       account_id: "0.0.7999", metadata: "hcs://1/0.0.7998" });
@@ -83,6 +96,8 @@ async function fixture() {
     { p: "hcs-26", op: "register", skill_uid: 42, version: "1.0.0",
       t_id: "0.0.8003", checksum: `sha256:${manifest.sha256}`, status: "active" });
   await hcs1(routes, "0.0.8003", Buffer.from(manifest.canonical_payload));
+  await hcs1(routes, "0.0.8100", skillFile);
+
   const evidence = { available: true, contract_version: "1.0.0",
     execution: { program: "sage", job_id: JOB, hedera_network: "testnet" },
     agents: { requester, executor },
@@ -94,14 +109,17 @@ async function fixture() {
       registry_sequence_number: 7, hcs13_ref: "hcs://13/0.0.9001#7",
       schema_checksum_sha256: schema.sha256 }] },
   };
+
   const input: ExecutionV1Input = { profile: "sage-standards-v1", evidence,
     intent: { subject: { kind: "execution", id: JOB, hedera_network: "testnet" }, expected: [] } };
+
   const fetch_impl = (async (url: string | URL | Request) => {
     const key = String(url);
     requests.push(key);
     if (!Object.hasOwn(routes, key)) return new Response(null, { status: 404 });
     return Response.json(routes[key]);
   }) as typeof fetch;
+
   return { input, evidence, routes, requests, fetch_impl,
     verify: (value: ExecutionV1Input = input) =>
       verifyExecutionWithIndependentStandardsV1({ fetch_impl }, value, {
@@ -110,7 +128,6 @@ async function fixture() {
 }
 
 describe("independent SAGE standards integration", () => {
-
   it("verifies the exact 2-agent, 1-capability, 1-schema plan with bounded Mirror reads", async () => {
     const f = await fixture();
     const report = await f.verify();
@@ -120,11 +137,6 @@ describe("independent SAGE standards integration", () => {
     ]);
     expect(report.findings.find((x) => x.check_id === "standards.references_resolved")?.outcome).toBe("pass");
     expect(report.findings.filter((x) => /^standards\.reference\.\d+$/.test(x.check_id))).toHaveLength(4);
-    expect(report.independent_standards.did_controller_authentication).toBe("not_checked");
-    expect(report.independent_standards.hedera_consensus_authentication).toBe("not_checked");
-    expect(report.independent_standards.historical_account_memo_binding).toBe("not_checked");
-    expect(report.independent_standards.manifest_files_resolution).toBe("not_checked");
-    expect(report.independent_standards.json_schema_instance_validation).toBe("not_checked");
     expect(report.observations.filter((x) => x.source === "hedera_mirror")).toHaveLength(4);
     expect(JSON.stringify(report)).not.toContain("A capability");
     expect(f.requests.length).toBeGreaterThan(10);
@@ -243,5 +255,118 @@ describe("independent SAGE standards integration", () => {
     await expect(f.verify({ ...f.input, profile: "execution-v1",
       expected_program: "other" })).rejects.toThrow("sage-standards-v1");
     expect(f.requests).toHaveLength(0);
+  });
+
+  it("handles native or unavailable HCS-1 Zstd in the standards CLI and saves a portable report", async () => {
+    const nativeZstdAvailable =
+      typeof (zlib as unknown as { zstdDecompressSync?: unknown }).zstdDecompressSync === "function";
+
+    const f = await fixture();
+    const dir = await mkdtemp(join(tmpdir(), "va-standards-cli-"));
+    vi.stubGlobal("fetch", f.fetch_impl);
+
+    try {
+      const evidencePath = join(dir, "evidence.json");
+      const intentPath = join(dir, "intent.json");
+      const policyPath = join(dir, "policy.json");
+      const reportPath = join(dir, "report.json");
+      const digest_payload = { result: { x: 1 }, id: JOB };
+      const enrichedEvidence = {
+        ...f.evidence,
+        binding: {
+          schema: "ExecutionBindingV1",
+          canonicalization: "RFC8785-JCS",
+          digest_algorithm: "SHA3-512",
+          domain_separator: "vera-anchor:execution-binding:v1",
+          finalized_at: "2026-10-15T00:00:00Z",
+          digest_payload,
+          digest: computeExecutionDomainSeparatedSha3_512(
+            "vera-anchor:execution-binding:v1", digest_payload,
+          ),
+        },
+      };
+
+      await writeFile(evidencePath, JSON.stringify(enrichedEvidence));
+      await writeFile(intentPath, JSON.stringify(f.input.intent));
+      await writeFile(policyPath, JSON.stringify({
+        schema_version: VERIFICATION_POLICY_SCHEMA_VERSION,
+        subject: f.input.intent.subject,
+        report_kind: "independent_standards",
+        required_checks: ["binding.digest_recomputed", "standards.references_resolved"],
+        required_assurance: ["mirror_corroboration"],
+        execution_scope: {
+          profile: "sage-standards-v1",
+          expected_program: "sage",
+          requested_result_id: null,
+        },
+        on_unresolved: "review",
+      }));
+
+      const output: string[] = [];
+      const code = await runVerifierCliV1([
+        "verify", "standards",
+        "--evidence", evidencePath,
+        "--intent", intentPath,
+        "--policy", policyPath,
+        "--mirror-url", BASE,
+        "--report-out", reportPath,
+      ], (line) => output.push(line));
+
+      expect(output).toHaveLength(1);
+      const result = JSON.parse(output[0]!);
+      expect(result.result.report.kind).toBe("independent_standards");
+      expect(result.result.report.core.findings.find(
+        (x: { check_id: string; outcome: string }) =>
+          x.check_id === "binding.digest_recomputed",
+      )?.outcome).toBe("pass");
+
+      const standardsOutcome = result.result.report.core.findings.find(
+        (x: { check_id: string; outcome: string }) =>
+          x.check_id === "standards.references_resolved",
+      )?.outcome;
+
+      if (nativeZstdAvailable) {
+        // The supported runtime must complete verification successfully.
+        expect(code).toBe(0);
+        expect(result.result.policy).toMatchObject({
+          decision: "allow", authority: "sdk_verification",
+        });
+        expect(standardsOutcome).toBe("pass");
+        expect(result.result.report.context.independent_standards.status).toBe("verified");
+        expect(f.requests.length).toBeGreaterThan(10);
+      } else {
+        // Missing decompression cannot authorize acceptance. The complete
+        // policy may resolve to review or deny depending on other findings.
+        const decision = result.result.policy.decision;
+        expect(["review", "deny"]).toContain(decision);
+        expect(result.result.policy.authority).toBe("sdk_verification");
+        expect(code).toBe(decision === "review" ? 2 : 1);
+        expect(standardsOutcome).not.toBe("pass");
+
+        const standards = result.result.report.context.independent_standards;
+        expect(standards.status).not.toBe("verified");
+        expect(standards.assurance).toBe("not_established");
+        expect(standards.items.some(
+          (item: { status: string }) => item.status !== "resolved",
+        )).toBe(true);
+        expect(f.requests.length).toBeGreaterThan(0);
+      }
+
+      const saved = JSON.parse(await readFile(reportPath, "utf8"));
+      expect(saved).toEqual(result.result.report);
+
+      const checked: string[] = [];
+      expect(await runVerifierCliV1(
+        ["report", "validate", "--report", reportPath],
+        (line) => checked.push(line),
+      )).toBe(0);
+      expect(JSON.parse(checked[0]!).result).toMatchObject({
+        status: "valid",
+        authenticity: "not_checked",
+      });
+    } finally {
+      vi.unstubAllGlobals();
+      await rm(dir, { recursive: true, force: true });
+    }
   });
 });

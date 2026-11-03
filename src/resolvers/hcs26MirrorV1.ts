@@ -1,17 +1,43 @@
-/** Exact historical HCS-26 discovery/version registers -> HCS-1 SKILL.json.
- * Does not reconstruct current registry state, verify files declared in the
- * manifest, authenticate a publisher, or authenticate Hedera consensus.
+/** Exact historical HCS-26 discovery/version registers -> HCS-1 SKILL.json -> declared HCS-1 files.
+ * Does not reconstruct current registry state, authenticate a publisher, or
+ * authenticate Hedera consensus. Manifest files are resolved only through
+ * their pinned HCS-1 references on the explicitly selected Hedera network.
  */
 import type { HederaNetwork } from "../contracts/verification.js";
 import { resolveHcs1FileV1, type Hcs1MirrorV1Config } from "./hcs1MirrorV1.js";
 import { readHcs26RegistryMessageV1 } from "./hcs26RegistryMirrorV1.js";
-import { parseHcs1ReferenceV1, type Hcs1V1ContentOptions } from "../standards/hcs/hcs1V1.js";
+import { MAX_HCS1_V1_FILE_BYTES, parseHcs1ReferenceV1, type Hcs1V1ContentOptions } from "../standards/hcs/hcs1V1.js";
 import { Hcs26V1Error, parseHcs26DiscoveryRegisterV1, parseHcs26VersionRegisterV1,
   parseHcs26SkillManifestV1, verifyHcs26SkillVersionV1,
   type Hcs26VersionRegisterV1, type Hcs26SkillManifestV1 } from "../standards/hcs/hcs26V1.js";
 
 const TOPIC = /^0\.0\.[0-9]+$/;
 const SHA256 = /^[0-9a-f]{64}$/;
+const MAX_MANIFEST_FILES = 256;
+const MAX_MANIFEST_FILES_TOTAL_BYTES = 32 * 1024 * 1024;
+const MANIFEST_FILES_TOTAL_TIMEOUT_MS = 60_000;
+
+type ManifestFileDeclaration = Readonly<{ path: string; hrl: string; sha256: string }>;
+
+export type Hcs26ManifestFileResolutionV1 = Readonly<{
+  path: string;
+  reference: string;
+  expected_sha256: string;
+  observed_sha256: string | null;
+  byte_length: number | null;
+  status: "resolved" | "conflict" | "invalid" | "unavailable" | "unsupported";
+  reason_code: string | null;
+}>;
+
+export type Hcs26ManifestFilesResolutionV1 = Readonly<{
+  status: "resolved" | "conflict" | "invalid" | "unavailable" | "unsupported";
+  reason_code: string | null;
+  declared_file_count: number;
+  resolved_file_count: number;
+  total_bytes: number;
+  /** Deterministic manifest-order observations; on failure, contains only the attempted prefix. */
+  files: readonly Hcs26ManifestFileResolutionV1[];
+}>;
 export type Hcs26MirrorV1Request = Readonly<{
   hedera_network: HederaNetwork;
   discovery_topic_id: string;
@@ -47,10 +73,108 @@ export type Hcs26MirrorV1Result = Readonly<{
   content_sha256: string | null;
   manifest_sha256: string | null;
   manifest: Hcs26SkillManifestV1["manifest"] | null;
-  discovery_metadata_resolution: "not_checked";
-  manifest_files_resolution: "not_checked";
+  manifest_files: Hcs26ManifestFilesResolutionV1 | null;
   assurance: "mirror_corroborated";
 }>;
+
+
+function manifestFilesOf(manifest: Hcs26SkillManifestV1["manifest"]): readonly ManifestFileDeclaration[] {
+  const entries = manifest.files;
+  if (!Array.isArray(entries) || entries.length < 1 || entries.length > MAX_MANIFEST_FILES) {
+    throw new Hcs26V1Error("HCS26_FILES_INVALID");
+  }
+  return Object.freeze(entries.map((entry) => {
+    if (!entry || typeof entry !== "object" || Array.isArray(entry)) {
+      throw new Hcs26V1Error("HCS26_FILES_INVALID");
+    }
+    const row = entry as Record<string, unknown>;
+    if (typeof row.path !== "string" || !row.path || row.path.length > 512 ||
+        typeof row.hrl !== "string" || typeof row.sha256 !== "string" || !SHA256.test(row.sha256)) {
+      throw new Hcs26V1Error("HCS26_FILES_INVALID");
+    }
+    const reference = parseHcs1ReferenceV1(row.hrl).reference;
+    return Object.freeze({ path: row.path, hrl: reference, sha256: row.sha256 });
+  }));
+}
+
+function fileResolution(
+  file: ManifestFileDeclaration,
+  status: Hcs26ManifestFileResolutionV1["status"],
+  reason_code: string | null,
+  observed_sha256: string | null = null,
+  byte_length: number | null = null,
+): Hcs26ManifestFileResolutionV1 {
+  return Object.freeze({ path: file.path, reference: file.hrl, expected_sha256: file.sha256,
+    observed_sha256, byte_length, status, reason_code });
+}
+
+async function resolveManifestFilesV1(
+  config: Hcs1MirrorV1Config,
+  network: HederaNetwork,
+  manifest: Hcs26SkillManifestV1["manifest"],
+  decodeOptions: Hcs1V1ContentOptions,
+): Promise<Hcs26ManifestFilesResolutionV1> {
+  const declarations = manifestFilesOf(manifest);
+  const files: Hcs26ManifestFileResolutionV1[] = [];
+  const deadline = Date.now() + MANIFEST_FILES_TOTAL_TIMEOUT_MS;
+  const configuredFileLimit = decodeOptions.max_file_bytes ?? MAX_HCS1_V1_FILE_BYTES;
+  let totalBytes = 0;
+
+  const output = (status: Hcs26ManifestFilesResolutionV1["status"], reason_code: string | null) =>
+    Object.freeze({ status, reason_code, declared_file_count: declarations.length,
+      resolved_file_count: files.filter((file) => file.status === "resolved").length,
+      total_bytes: totalBytes, files: Object.freeze([...files]) });
+
+  // Sequential by design: exact manifest order, one outstanding HCS-1 read, and
+  // a strict aggregate byte budget keep resource use bounded and result ordering deterministic.
+  for (const file of declarations) {
+    const remainingMs = deadline - Date.now();
+    if (remainingMs < 250) return output("unavailable", "HCS26_MANIFEST_FILES_TIMEOUT");
+    const remainingBytes = MAX_MANIFEST_FILES_TOTAL_BYTES - totalBytes;
+    if (remainingBytes < 1) return output("unsupported", "HCS26_MANIFEST_FILES_TOTAL_BYTES_EXCEEDED");
+
+    const effectiveFileLimit = Math.min(configuredFileLimit, remainingBytes);
+    const configuredReadTimeout = config.total_timeout_ms ?? 30_000;
+    const readConfig: Hcs1MirrorV1Config = {
+      ...config,
+      total_timeout_ms: Math.min(configuredReadTimeout, remainingMs),
+    };
+    const fileDecodeOptions: Hcs1V1ContentOptions = {
+      ...decodeOptions,
+      max_file_bytes: effectiveFileLimit,
+    };
+    const observed = await resolveHcs1FileV1(readConfig, {
+      network, reference: file.hrl,
+    }, fileDecodeOptions);
+
+    if (observed.status !== "resolved" || !observed.verification?.bytes || !observed.verification.sha256) {
+      const aggregateLimited = effectiveFileLimit < configuredFileLimit &&
+        observed.reason_code === "HCS1_FILE_TOO_LARGE";
+      const timedOut = Date.now() >= deadline && observed.status === "unavailable";
+      const status = aggregateLimited ? "unsupported" as const :
+        observed.status === "resolved" ? "invalid" as const : observed.status;
+      const reason = aggregateLimited ? "HCS26_MANIFEST_FILES_TOTAL_BYTES_EXCEEDED" :
+        timedOut ? "HCS26_MANIFEST_FILES_TIMEOUT" :
+          observed.status === "resolved" ? "HCS26_MANIFEST_FILE_OBSERVATION_INVALID" :
+            observed.reason_code ?? "HCS26_MANIFEST_FILE_UNAVAILABLE";
+      files.push(fileResolution(file, status, reason));
+      return output(status, reason);
+    }
+
+    const observedHash = observed.verification.sha256;
+    const byteLength = observed.verification.bytes.byteLength;
+    if (observedHash !== file.sha256) {
+      const reason = "HCS26_MANIFEST_FILE_CHECKSUM_MISMATCH";
+      files.push(fileResolution(file, "conflict", reason, observedHash, byteLength));
+      return output("conflict", reason);
+    }
+
+    totalBytes += byteLength;
+    files.push(fileResolution(file, "resolved", null, observedHash, byteLength));
+  }
+
+  return output("resolved", null);
+}
 
 export async function resolveHcs26SkillVersionV1(
   config: Hcs1MirrorV1Config,
@@ -81,6 +205,7 @@ export async function resolveHcs26SkillVersionV1(
   let contentHash: string | null = null;
   let manifestHash: string | null = null;
   let manifest: Hcs26SkillManifestV1["manifest"] | null = null;
+  let manifestFiles: Hcs26ManifestFilesResolutionV1 | null = null;
   const output = (status: Hcs26MirrorV1Result["status"], reason_code: string | null): Hcs26MirrorV1Result =>
     Object.freeze({ status, reason_code, hedera_network: request.hedera_network,
       resolver_id: "hedera.mirror-rest.hcs26.v1" as const,
@@ -91,8 +216,7 @@ export async function resolveHcs26SkillVersionV1(
       version_consensus_timestamp_exact: versionTime, historical_version_status: register?.status ?? null,
       skill_uid: register?.skill_uid ?? null, version: register?.version ?? null,
       manifest_reference: manifestRef, content_sha256: contentHash, manifest_sha256: manifestHash,
-      manifest, discovery_metadata_resolution: "not_checked" as const,
-      manifest_files_resolution: "not_checked" as const, assurance: "mirror_corroborated" as const });
+      manifest, manifest_files: manifestFiles, assurance: "mirror_corroborated" as const });
 
   if (request.expected_skill_uid != null && request.expected_skill_uid !== request.discovery_sequence_number) {
     return output("conflict", "HCS26_SKILL_UID_MISMATCH");
@@ -170,6 +294,10 @@ export async function resolveHcs26SkillVersionV1(
     }
     if (manifestHash !== contentHash) return output("conflict", "HCS26_CANONICAL_CONTENT_MISMATCH");
     manifest = parsed.manifest;
+    manifestFiles = await resolveManifestFilesV1(config, request.hedera_network, manifest, decodeOptions);
+    if (manifestFiles.status !== "resolved") {
+      return output(manifestFiles.status, manifestFiles.reason_code);
+    }
     return output("resolved", null);
   } catch (error) {
     if (error instanceof Hcs26V1Error) return output("invalid", error.code);

@@ -70,6 +70,15 @@ function requestBounds(config: HederaMirrorV1Config): { timeout: number; max: nu
   return { timeout, max };
 }
 
+
+function singleMessageChunk(value: unknown): boolean {
+  if (value == null) return true;
+  if (typeof value !== "object" || Array.isArray(value)) return false;
+
+  const chunk = value as Record<string, unknown>;
+  return chunk.number === 1 && chunk.total === 1;
+}
+
 async function readJson(config: HederaMirrorV1Config, url: URL,
   bounds: { timeout: number; max: number }): Promise<Json | null> {
   let response: Response;
@@ -161,10 +170,13 @@ export async function resolveHcs2RegisterV1(
     const memo = normalizedMemo(topicRow.memo);
     const row = await readJson(config, new URL(`${prefix}/topics/${topic}/messages/${request.sequence_number}`), bounds);
     if (!row) return output(request, "unavailable", "HCS2_REGISTER_NOT_FOUND", null);
+
     if (row.topic_id !== topic || row.sequence_number !== request.sequence_number ||
-        row.chunk_info != null || typeof row.message !== "string" || !BASE64.test(row.message)) {
+        !singleMessageChunk(row.chunk_info) ||
+        typeof row.message !== "string" || !BASE64.test(row.message)) {
       throw new ReadFailure("HCS2_MESSAGE_SCOPE_INVALID", true);
     }
+
     const timestamp = row.consensus_timestamp;
     if (typeof timestamp !== "string" || !TIMESTAMP.test(timestamp)) {
       throw new ReadFailure("HCS2_MESSAGE_TIMESTAMP_INVALID", true);

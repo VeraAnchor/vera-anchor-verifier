@@ -3,6 +3,10 @@ import { describe, expect, it, vi } from "vitest";
 import { sha3_512Hex } from "../../src/crypto/sha3.js";
 import { resolveHederaPublicationV1 } from "../../src/resolvers/hederaMirrorV1.js";
 import { triangulateDatasetV1, triangulateIngestV1 } from "../../src/triangulation/publicV1.js";
+import { triangulateDatasetWithPolicyV1, triangulateIngestWithPolicyV1,
+  assessPortableVerificationPolicyV1 } from "../../src/policy/evaluateV1.js";
+import { VERIFICATION_POLICY_SCHEMA_VERSION, type VerificationPolicyV1 } from "../../src/policy/contractV1.js";
+import { validatePortableVerificationReportV1 } from "../../src/reports/validationV1.js";
 
 const NETWORK = "testnet" as const;
 const TOPIC = "0.0.12345";
@@ -249,5 +253,91 @@ describe("Phase 3C source-aware public triangulation", () => {
     expect(out.consistency).toBe("consistent");
     expect(check(out, "triangulation.provided_public_record.publication_bundle_digest")).toBe("pass");
     expect(check(out, "triangulation.public_record_hedera.message_sha3_512")).toBe("pass");
+  });
+});
+
+describe("source-byte to public policy conformance", () => {
+  it("recomputes a dataset and makes a reproducible policy decision over Explorer and Mirror evidence", async () => {
+    const entry = fixture(dataset.cases, "basic-v1");
+    const key = (entry.bundle.dataset_identity as { dataset_key: string }).dataset_key;
+    const fingerprint = (entry.hash_only_receipt.evidence as { dataset_fingerprint: string }).dataset_fingerprint;
+    const policy: VerificationPolicyV1 = { schema_version: VERIFICATION_POLICY_SCHEMA_VERSION,
+      subject: { kind: "dataset", id: key, hedera_network: NETWORK }, report_kind: "public_triangulation",
+      required_checks: ["dataset.source_binding", "dataset.bundle_consistency"],
+      required_assurance: ["mirror_corroboration"] };
+    const run = () => {
+      const exp = explorer((url) => url.pathname.startsWith("/v1/datasets/") ? json({
+        hedera_network: NETWORK, dataset_key: key, dataset_id: DATASET, dataset_version_id: VERSION,
+        dataset_fingerprint: fingerprint, publication_version_transaction_id: TX,
+        publication_version_message_id: `5@${TOPIC}`, publication_version_topic_id: TOPIC,
+        publication_version_sequence_number: 5,
+      }) : json(successfulDisclosure("dataset_version", VERSION, { dataset_key: key, fingerprint })));
+      return triangulateDatasetWithPolicyV1({ explorer: exp.config, mirror: mirror().config }, {
+        bundle: entry.bundle, files: material.dataset[entry.case_id]!.map((file) => ({
+          path_rel: file.path_rel, source: [Buffer.from(file.content_base64, "base64")],
+        })), receipt: entry.hash_only_receipt,
+        intent: { subject: policy.subject, expected: [] },
+      }, policy);
+    };
+    const first = await run();
+    const second = await run();
+    expect(first.policy).toEqual(second.policy);
+    expect(first.report.report_sha3_512).toBe(second.report.report_sha3_512);
+    expect(validatePortableVerificationReportV1(first.report).status).toBe("valid");
+    expect(first.policy.requirements.find((r) => r.key === "verification.public_evidence")?.outcome).toBe("pass");
+    expect(first.policy.requirements.find((r) => r.key === "assurance.mirror_corroboration")?.outcome).toBe("pass");
+    expect(first.policy.decision).toBe("allow");
+    expect(first.report.context).not.toHaveProperty("publication_payload_binding");
+    expect(assessPortableVerificationPolicyV1(first.report, policy).decision).toBe("review");
+  });
+
+  it("never authorizes a dataset when Explorer disclosure is missing, even if local files verify", async () => {
+    const entry = fixture(dataset.cases, "basic-v1");
+    const key = (entry.bundle.dataset_identity as { dataset_key: string }).dataset_key;
+    const fingerprint = (entry.hash_only_receipt.evidence as { dataset_fingerprint: string }).dataset_fingerprint;
+    const exp = explorer((url) => url.pathname.startsWith("/v1/datasets/") ? json({
+      hedera_network: NETWORK, dataset_key: key, dataset_version_id: VERSION,
+      dataset_fingerprint: fingerprint, publication_version_transaction_id: TX,
+      publication_version_message_id: `5@${TOPIC}`, publication_version_topic_id: TOPIC,
+      publication_version_sequence_number: 5,
+    }) : json({ error: "not_found" }, 404));
+    const policy: VerificationPolicyV1 = { schema_version: VERIFICATION_POLICY_SCHEMA_VERSION,
+      subject: { kind: "dataset", id: key, hedera_network: NETWORK }, report_kind: "public_triangulation",
+      required_checks: ["dataset.source_binding"] };
+    const output = await triangulateDatasetWithPolicyV1({ explorer: exp.config, mirror: mirror().config }, {
+      bundle: entry.bundle, files: material.dataset[entry.case_id]!.map((file) => ({
+        path_rel: file.path_rel, source: [Buffer.from(file.content_base64, "base64")],
+      })), receipt: entry.hash_only_receipt,
+      intent: { subject: policy.subject, expected: [] },
+    }, policy);
+    expect(output.policy.decision).not.toBe("allow");
+    expect(output.policy.reason_codes).toContain("POLICY_PUBLIC_EVIDENCE_INCOMPLETE");
+  });
+
+  it("binds ingest policy to its independent source and Core anchor identities", async () => {
+    const entry = fixture(ingest.cases, "json-v1");
+    const key = (entry.bundle.identity as { object_key: string }).object_key;
+    const evidence = entry.hash_only_receipt.evidence as { fingerprint: string; bundle_digest: string };
+    const exp = explorer((url) => url.pathname.startsWith("/v1/merkle/anchors/") ? json({
+      hedera_network: NETWORK, anchor_request_id: ANCHOR, ingest_object_key: key,
+      ingest_fingerprint: evidence.fingerprint, ingest_bundle_digest: evidence.bundle_digest,
+      publication_anchor_transaction_id: TX, publication_anchor_message_id: `5@${TOPIC}`,
+      publication_anchor_topic_id: TOPIC, publication_anchor_sequence_number: 5,
+    }) : json(successfulDisclosure("merkle_anchor", ANCHOR, { ingest_object_key: key,
+      ingest_fingerprint: evidence.fingerprint, ingest_bundle_digest: evidence.bundle_digest })));
+    const policy: VerificationPolicyV1 = { schema_version: VERIFICATION_POLICY_SCHEMA_VERSION,
+      subject: { kind: "ingest", id: key, hedera_network: NETWORK }, report_kind: "public_triangulation",
+      required_checks: ["ingest.source_binding", "ingest.bundle_consistency"],
+      required_assurance: ["mirror_corroboration"] };
+    const input = { bundle: entry.bundle, material: material.ingest[entry.case_id] as { kind: "json"; value: unknown },
+      receipt: entry.hash_only_receipt, anchor_request_id: ANCHOR,
+      intent: { subject: policy.subject, expected: [] } };
+    const output = await triangulateIngestWithPolicyV1({ explorer: exp.config, mirror: mirror().config }, input, policy);
+    expect(validatePortableVerificationReportV1(output.report).status).toBe("valid");
+    expect(output.policy.decision).toBe("allow");
+    expect(output.report.core.intent.subject.id).toBe(key);
+    expect(output.report.context).not.toHaveProperty("publication_payload_binding");
+    await expect(triangulateIngestWithPolicyV1({ explorer: exp.config, mirror: mirror().config }, input,
+      { ...policy, subject: { ...policy.subject, id: "unrelated" } })).rejects.toThrow(/policy intent/);
   });
 });

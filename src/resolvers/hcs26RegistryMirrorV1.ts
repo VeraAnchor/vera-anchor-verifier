@@ -57,6 +57,13 @@ function limits(config: HederaMirrorV1Config): { timeout: number; bytes: number 
   }
   return { timeout, bytes };
 }
+function singleMessageChunk(value: unknown): boolean {
+  if (value == null) return true;
+  if (typeof value !== "object" || Array.isArray(value)) return false;
+
+  const chunk = value as Record<string, unknown>;
+  return chunk.number === 1 && chunk.total === 1;
+}
 async function readJson(config: HederaMirrorV1Config, url: URL,
   limit: { timeout: number; bytes: number }): Promise<Json | null> {
   let response: Response;
@@ -154,9 +161,12 @@ export async function readHcs26RegistryMessageV1(
     if (memo.type !== request.registry_type) return output("invalid", "HCS26_REGISTRY_TYPE_MISMATCH");
     const row = await readJson(config, new URL(`${prefix}/${path}/messages/${request.sequence_number}`), bound);
     if (!row) return output("unavailable", "HCS26_REGISTRY_ENTRY_NOT_FOUND");
-    if (row.topic_id !== request.topic_id || row.sequence_number !== request.sequence_number || row.chunk_info != null) {
+    if (row.topic_id !== request.topic_id ||
+        row.sequence_number !== request.sequence_number ||
+       !singleMessageChunk(row.chunk_info)) {
       throw new ReadError("HCS26_REGISTRY_MESSAGE_SCOPE_MISMATCH", true);
     }
+
     if (typeof row.consensus_timestamp !== "string" || !TS.test(row.consensus_timestamp)) {
       throw new ReadError("HCS26_REGISTRY_TIMESTAMP_INVALID", true);
     }

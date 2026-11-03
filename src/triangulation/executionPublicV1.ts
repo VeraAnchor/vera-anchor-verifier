@@ -16,7 +16,6 @@ export type PublicExecutionTriangulationV1Result = Readonly<{
   reason_code: string | null;
   public_record_acquisition: ExplorerExecutionV1Result["status"];
   hedera_resolution: ExecutionMirrorV1Result["status"] | "not_checked";
-  publication_payload_binding: "not_checked";
   plan: ExecutionTriangulationPlanV1 | null;
   mirror: ExecutionMirrorV1Result | null;
   comparison: TriangulationV1Result | null;
@@ -39,7 +38,7 @@ export async function triangulatePublicExecutionV1(
   if (publicRecord.status !== "resolved" || !publicRecord.evidence) {
     return Object.freeze({ status: publicRecord.status, reason_code: publicRecord.reason_code,
       public_record_acquisition: publicRecord.status, hedera_resolution: "not_checked" as const,
-      publication_payload_binding: "not_checked" as const, plan: null, mirror: null, comparison: null });
+      plan: null, mirror: null, comparison: null });
   }
   const plan = prepareExecutionTriangulationV1({ execution, public_evidence: publicRecord.evidence });
   const mirror = await resolveExecutionHederaV1(config.mirror ?? {}, {
@@ -55,6 +54,5 @@ export async function triangulatePublicExecutionV1(
     ? "EXECUTION_SOURCE_OR_COMPARISON_CONFLICT" : mirror.reason_code;
   return Object.freeze({ status, reason_code,
     public_record_acquisition: "resolved" as const, hedera_resolution: mirror.status,
-    publication_payload_binding: "not_checked" as const,
     plan, mirror, comparison });
 }

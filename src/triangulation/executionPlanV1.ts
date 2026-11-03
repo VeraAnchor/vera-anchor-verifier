@@ -35,7 +35,6 @@ export type ExecutionTriangulationPlanV1 = Readonly<{
   /** Public input has not yet been acquired or authenticated by an SDK resolver. */
   public_record_acquisition: "not_checked";
   hedera_resolution: "not_checked";
-  publication_payload_binding: "not_checked";
   source_report: ExecutionV1Report;
   triangulation: TriangulationV1Input;
   hedera_targets: readonly ExecutionHederaTargetV1[];
@@ -226,7 +225,6 @@ export function prepareExecutionTriangulationV1(input: Readonly<{
   ];
   return Object.freeze({ stage: "unresolved_authority_plan" as const,
     public_record_acquisition: "not_checked" as const, hedera_resolution: "not_checked" as const,
-    publication_payload_binding: "not_checked" as const,
     source_report: source,
     triangulation: Object.freeze({ source_report: source,
       observations: Object.freeze([providedObservation, publicObservation]),

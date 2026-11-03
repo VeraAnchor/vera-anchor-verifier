@@ -32,7 +32,6 @@ describe("Execution triangulation authority plan", () => {
     const plan = setup();
     expect(plan.stage).toBe("unresolved_authority_plan");
     expect(plan.hedera_resolution).toBe("not_checked");
-    expect(plan.publication_payload_binding).toBe("not_checked");
     expect(plan.triangulation.relationships.map((p) => p.id)).toEqual([
       "provided_public_record", "public_record_hedera", "provided_hedera",
     ]);

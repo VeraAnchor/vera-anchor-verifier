@@ -23,7 +23,7 @@ const MAX_PROGRAM = 128;
 export type ExecutionV1Profile = "execution-v1" | "sage-standards-v1";
 
 export type ExecutionV1Report = VerificationReport & Readonly<{
-  /** Independent caller constraints retained for audit and future portable reports. */
+  /** Independent caller constraints retained for audit and portable reporting. */
   verification_scope: Readonly<{
     profile: ExecutionV1Profile;
     expected_program: string | null;
