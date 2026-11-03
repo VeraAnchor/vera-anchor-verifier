@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-Security fixes are provided for the latest published release line of `@vera-anchor/verifier`. Users should upgrade to the latest available patch release before reporting a security issue that may already have been corrected.
+Security fixes are provided for the latest published release line of `@veraanchor/verifier`. Users should upgrade to the latest available patch release before reporting a security issue that may already have been corrected.
 
 Pre-release branches, unpublished commits and local development builds are not supported release artifacts.
 

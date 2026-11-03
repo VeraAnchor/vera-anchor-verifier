@@ -1,6 +1,6 @@
 # Vera Anchor Verifier SDK
 
-`@vera-anchor/verifier` is an open-source, read-only verifier for Vera Anchor evidence and supported HCS-backed execution references.
+`@veraanchor/verifier` is an open-source, read-only verifier for Vera Anchor evidence and supported HCS-backed execution references.
 
 The SDK is local-first. Offline workflows recompute commitments from caller-supplied evidence and source material without Vera Anchor credentials. Explicit public workflows can resolve Vera Anchor Explorer records and independently corroborate supported Hedera observations using caller-selected network configuration.
 
@@ -33,7 +33,7 @@ See [Verification semantics](docs/verification-semantics.md) and the [Threat mod
 ## Installation
 
 ```sh
-npm install @vera-anchor/verifier
+npm install @veraanchor/verifier
 ```
 
 The package is ESM-only and has no runtime dependencies.
@@ -45,7 +45,7 @@ Node.js 24 is recommended for the full v0.1 feature set. The supported runtime r
 Verification primitives are available from the package root:
 
 ```js
-import { verifyDatasetV1Bundle } from "@vera-anchor/verifier";
+import { verifyDatasetV1Bundle } from "@veraanchor/verifier";
 
 const result = verifyDatasetV1Bundle(bundle);
 
@@ -259,6 +259,6 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for development and contribution requirem
 
 ## License
 
-Licensed under the Apache License 2.0.
+Licensed under the MIT License.
 
 See [LICENSE](LICENSE) and [NOTICE](NOTICE).

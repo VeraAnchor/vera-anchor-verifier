@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 
-import { verifyDatasetWithPolicyV1 } from "@vera-anchor/verifier";
+import { verifyDatasetWithPolicyV1 } from "@veraanchor/verifier";
 
 const [bundlePath, receiptPath, sourcePath, pathRel, intentPath, policyPath] =
   process.argv.slice(2);

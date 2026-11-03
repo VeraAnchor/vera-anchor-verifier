@@ -1,6 +1,6 @@
 # Vera Anchor Verifier CLI (v0.1)
 
-The `vera-anchor` executable is installed with `@vera-anchor/verifier`.
+The `vera-anchor` executable is installed with `@veraanchor/verifier`.
 
 After installing the package, run commands with `npx vera-anchor`. Contributors working from a source checkout may build the package with `npm run build` and invoke `node dist/cli.js` directly.
 

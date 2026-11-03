@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 
-import { verifyDatasetV1WithIntent } from "@vera-anchor/verifier";
+import { verifyDatasetV1WithIntent } from "@veraanchor/verifier";
 
 const [bundlePath, receiptPath, sourcePath, pathRel, datasetKey, network] =
   process.argv.slice(2);

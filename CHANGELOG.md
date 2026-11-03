@@ -1,8 +1,8 @@
 # Changelog
 
-All notable changes to `@vera-anchor/verifier` are documented here.
+All notable changes to `@veraanchor/verifier` are documented here.
 
-## [0.1.0] - Unreleased
+## [0.1.0] - 2026-11-03
 
 Initial public release.
 

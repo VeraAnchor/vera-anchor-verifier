@@ -1,6 +1,6 @@
 # Examples
 
-These examples use the public `@vera-anchor/verifier` package API and are intentionally small.
+These examples use the public `@veraanchor/verifier` package API and are intentionally small.
 
 They treat evidence as untrusted input. Dataset identity, network selection, expected scope and policy must come from the relying party's trusted context.
 

@@ -1,9 +1,8 @@
 {
-  "name": "@vera-anchor/verifier",
-  "version": "0.0.0",
-  "private": true,
+  "name": "@veraanchor/verifier",
+  "version": "0.1.0",
   "description": "Independent, read-only verification of Vera Anchor evidence and supported HCS records",
-  "license": "Apache-2.0",
+  "license": "MIT",
   "type": "module",
   "sideEffects": false,
   "bin": {
