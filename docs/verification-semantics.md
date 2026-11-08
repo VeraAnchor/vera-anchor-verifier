@@ -34,7 +34,7 @@ Policy decisions are separate from verification findings:
 
 Verification intent and policy must be controlled by the relying party. An untrusted receipt, bundle, execution record or standards projection cannot define its own sufficient acceptance threshold.
 
-## Assurance in v0.1
+## Assurance
 
 The current policy assurance dimension is `mirror_corroboration`. It means the relevant supported fact was independently observed through the SDK's Hedera Mirror resolver path. It does not mean that the SDK authenticated Hedera consensus signatures or established control of an account, DID or publisher key.
 
@@ -42,7 +42,7 @@ The SDK also performs deterministic integrity and binding checks where the under
 
 ## Supported standards interpretation
 
-The v0.1 standards path supports pinned verification behavior for HCS-1, HCS-2, HCS-11, HCS-13, HCS-14 and HCS-26 as exposed by the SDK. Standards registration or profile publication is evidence of the declared record and its supported integrity relationships; it is not evidence that associated software executed, that a publisher currently controls a key, or that a claim is factually true.
+The standards path supports pinned verification behavior for HCS-1, HCS-2, HCS-11, HCS-13, HCS-14 and HCS-26 as exposed by the SDK. Standards registration or profile publication is evidence of the declared record and its supported integrity relationships; it is not evidence that associated software executed, that a publisher currently controls a key, or that a claim is factually true.
 
 HCS-26 verification resolves the selected historical discovery/version path, verifies the canonical manifest, and verifies integrity for the manifest-declared HCS-1 files within the SDK's resource bounds.
 
@@ -54,12 +54,22 @@ Accordingly, a saved report cannot elevate itself into an SDK-authenticated `all
 
 ## Authentication boundary
 
-v0.1 intentionally stops short of stronger authentication claims. In particular, a SHA3-512 match, HCS content checksum, Explorer resolution or Mirror observation does not by itself establish:
+Authentication determines which private evidence the verifier may acquire. It does not determine whether that evidence verifies.
+
+Vera Anchor Core remains authoritative for authentication, tenant authorization, and permitted private-evidence retrieval. The verifier does not reproduce Core access-control logic.
+
+When Core performs service-assisted decryption, the returned plaintext remains untrusted evidence. The SDK independently recomputes every supported Dataset or Ingest check rather than treating Core authorization, `verified` fields, hash-match fields, or other server assertions as verification proof.
+
+Authenticated evidence retains explicit `authorized_service` provenance. That provenance is not itself an integrity or assurance result.
+
+Where supported, the verifier separately resolves the selected Hedera message through its Mirror path and compares independently acquired message commitments with the Core-provided message binding.
+
+Accordingly, authenticated acquisition does not by itself establish:
 
 - Hedera consensus-signature authentication;
 - DID-controller or publisher-key authentication;
 - historical ownership of an account;
 - factual truth of the verified content;
-- independent cryptographic binding of Explorer-assisted decrypted plaintext to publication ciphertext.
+- independent cryptographic proof that service-assisted plaintext decryption corresponds to a particular publication ciphertext.
 
-Future authentication capabilities must be represented as additional explicit evidence and assurance, not by changing the meaning of existing v0.1 outcomes.
+These properties require separate explicit evidence or assurance. They must not be inferred from successful authorization, decryption, integrity checks, or Mirror corroboration.

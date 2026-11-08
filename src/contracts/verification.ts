@@ -77,6 +77,7 @@ export type VerificationObservation = Readonly<{
   source:
     | "provided_evidence"
     | "public_record"
+    | "authorized_service"
     | "hedera_mirror"
     | "local_computation";
   resolver_id?: string;

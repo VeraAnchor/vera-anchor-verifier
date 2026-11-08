@@ -6,6 +6,8 @@ After installing the package, run commands with `npx vera-anchor`. Contributors 
 
 Dataset verification defaults to **offline**. Public verification is always explicit. Ingest and SAGE execution support both offline and public workflows, while independent SAGE HCS standards verification is a separate networked workflow.
 
+Authenticated Dataset and Ingest verification is exposed through the library API, not the CLI. The CLI does not accept Vera Anchor private-evidence credentials.
+
 ## Commands
 
 ```text

@@ -17,7 +17,9 @@ import type {
 export type TriangulationRelationshipId =
   | "provided_public_record"
   | "public_record_hedera"
-  | "provided_hedera";
+  | "provided_hedera"
+  | "provided_authorized"
+  | "authorized_hedera";
 
 export type TriangulationFactPlanV1 = Readonly<{
   key: string;
@@ -35,7 +37,7 @@ export type TriangulationRelationshipPlanV1 = Readonly<{
 export type TriangulationV1Input = Readonly<{
   /** Produced by an actual offline verifier invocation, not an authenticated attestation. */
   source_report: VerificationReport;
-  /** Public/Mirror observations obtained outside this pure function. */
+  /** Resolver/Mirror observations obtained outside this pure function. */
   observations: readonly VerificationObservation[];
   /** Explicit field mappings defined by the verifier's evidence profile. */
   relationships: readonly TriangulationRelationshipPlanV1[];
@@ -146,6 +148,13 @@ function roleAllowed(
     return (left.source === "provided_evidence" || left.source === "local_computation") &&
       right.source === "hedera_mirror";
   }
+  if (relationship === "provided_authorized") {
+    return (left.source === "provided_evidence" || left.source === "local_computation") &&
+      right.source === "authorized_service";
+  }
+  if (relationship === "authorized_hedera") {
+    return left.source === "authorized_service" && right.source === "hedera_mirror";
+  }
   return left.source === "public_record" && right.source === "hedera_mirror";
 }
 
@@ -229,7 +238,7 @@ export function compareEvidenceTriangulationV1(input: TriangulationV1Input): Tri
   const results: TriangulationRelationshipResultV1[] = [];
 
   for (const relationship of input.relationships) {
-    if (!["provided_public_record", "public_record_hedera", "provided_hedera"].includes(relationship.id) ||
+    if (!["provided_public_record", "public_record_hedera", "provided_hedera", "provided_authorized", "authorized_hedera"].includes(relationship.id) ||
       usedRelationships.has(relationship.id)) {
       throw new TypeError("Unknown or duplicated triangulation relationship");
     }

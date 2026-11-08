@@ -5,6 +5,8 @@ import type { ExecutionV1Report } from "../profiles/execution/verificationV1.js"
 import type { IndependentStandardsV1Report } from "../profiles/execution/independentStandardsV1.js";
 import type { PublicTriangulationV1Result } from "../triangulation/publicV1.js";
 import type { PublicExecutionTriangulationV1Result } from "../triangulation/executionPublicV1.js";
+import type { AuthorizedDatasetTriangulationV1Result } from "../triangulation/authorizedDatasetV1.js";
+import type { AuthorizedIngestTriangulationV1Result } from "../triangulation/authorizedIngestV1.js";
 import type { TriangulationRelationshipResultV1 } from "../triangulation/compareV1.js";
 
 export const PORTABLE_VERIFICATION_REPORT_SCHEMA_VERSION = "va.portable-verification-report.v1";
@@ -16,6 +18,8 @@ const ID = /^[a-z][a-z0-9._:-]{0,159}$/;
 const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i;
 const OUTCOMES = new Set<VerificationOutcome>(["pass", "fail", "indeterminate", "unsupported", "skipped"]);
 const STATUS = ["resolved", "conflict", "invalid", "unavailable", "unsupported"];
+const PUBLIC_RELATIONSHIPS = ["provided_public_record", "public_record_hedera", "provided_hedera"] as const;
+const AUTHORIZED_RELATIONSHIPS = ["provided_authorized", "authorized_hedera"] as const;
 
 type Json = null | string | number | boolean | Json[] | { [key: string]: Json };
 type JsonObject = { [key: string]: Json };
@@ -25,6 +29,8 @@ export type PortableVerificationReportV1Input =
   | Readonly<{ kind: "execution"; result: ExecutionV1Report }>
   | Readonly<{ kind: "independent_standards"; result: IndependentStandardsV1Report }>
   | Readonly<{ kind: "public_triangulation"; result: PublicTriangulationV1Result }>
+  | Readonly<{ kind: "authorized_dataset_triangulation"; result: AuthorizedDatasetTriangulationV1Result }>
+  | Readonly<{ kind: "authorized_ingest_triangulation"; result: AuthorizedIngestTriangulationV1Result }>
   | Readonly<{ kind: "execution_triangulation"; result: PublicExecutionTriangulationV1Result;
       /** Required only when the public execution was not acquired and no plan exists. */
       source_report?: ExecutionV1Report }>;
@@ -161,11 +167,15 @@ function standardsContext(report: IndependentStandardsV1Report): JsonObject {
   return json({ verification_scope: checkedExecutionScope(report), independent_standards: standards }) as JsonObject;
 }
 
-function relationshipContext(report: VerificationReport, relationships: readonly TriangulationRelationshipResultV1[]): Json {
+function relationshipContext(
+  report: VerificationReport,
+  relationships: readonly TriangulationRelationshipResultV1[],
+  allowedIds: readonly string[],
+): Json {
   if (!Array.isArray(relationships) || relationships.length > 3) throw new TypeError("Invalid triangulation relationships");
   const used = new Set<string>();
   for (const rel of relationships) {
-    if (!["provided_public_record", "public_record_hedera", "provided_hedera"].includes(rel.id) ||
+    if (!allowedIds.includes(rel.id) ||
         used.has(rel.id) || !["consistent", "conflict", "incomplete", "not_applicable"].includes(rel.status) ||
         !Array.isArray(rel.fact_comparisons) || rel.fact_comparisons.length > 64) {
       throw new TypeError("Invalid triangulation relationship");
@@ -222,8 +232,88 @@ function context(input: PortableVerificationReportV1Input): { report: Verificati
     }
     return { report: result.report, context: {
       consistency: state,
-      relationships: relationshipContext(result.report, result.relationships),
+      relationships: relationshipContext(result.report, result.relationships, PUBLIC_RELATIONSHIPS),
       resolution: json(result.resolution),
+    } };
+  }
+  if (input.kind === "authorized_dataset_triangulation") {
+    const result = input.result;
+    const state = consistency(result.consistency);
+    if (result.report.intent.subject.kind !== "dataset" ||
+        (result.report.intent.subject.hedera_network !== "mainnet" &&
+         result.report.intent.subject.hedera_network !== "testnet")) {
+      throw new TypeError("Authorized Dataset triangulation requires a network-scoped Dataset subject");
+    }
+    const relationships = relationshipContext(
+      result.report, result.relationships, AUTHORIZED_RELATIONSHIPS,
+    );
+    const ids = new Set(result.relationships.map((entry) => entry.id));
+    const resolution = result.resolution;
+    for (const id of AUTHORIZED_RELATIONSHIPS) {
+      if (!ids.has(id)) throw new TypeError("Authorized Dataset triangulation is missing a required relationship");
+    }
+    if (!["resolved", "unauthorized", "forbidden", "not_found", "rate_limited", "unavailable", "invalid"].includes(resolution.authorized_core) ||
+        !["resolved", "unavailable", "invalid", "conflict", "not_requested", "not_resolved", "locator_unavailable"].includes(resolution.hedera_mirror) ||
+        !["resolved", "unavailable", "unsupported", "invalid", "conflict"].includes(resolution.dataset_registry_event)) {
+      throw new TypeError("Invalid authorized Dataset resolution");
+    }
+    requireFinding(
+      result.report,
+      "triangulation.authorized_dataset.registry_event_profile",
+      expectedOutcome(resolution.dataset_registry_event),
+    );
+    const relationshipConflict = result.relationships.some((entry) => entry.status === "conflict");
+    const resolutionConflict = resolution.hedera_mirror === "conflict" ||
+      resolution.dataset_registry_event === "invalid" || resolution.dataset_registry_event === "conflict";
+    const complete = resolution.authorized_core === "resolved" &&
+      resolution.hedera_mirror === "resolved" && resolution.dataset_registry_event === "resolved" &&
+      result.relationships.every((entry) => entry.status === "consistent");
+    const expectedState = relationshipConflict || resolutionConflict ? "conflict" : complete ? "consistent" : "incomplete";
+    if (state !== expectedState) throw new TypeError("Inconsistent authorized Dataset aggregate");
+    return { report: result.report, context: {
+      consistency: state,
+      relationships,
+      resolution: json(resolution),
+    } };
+  }
+  if (input.kind === "authorized_ingest_triangulation") {
+    const result = input.result;
+    const state = consistency(result.consistency);
+    if (result.report.intent.subject.kind !== "ingest" ||
+        (result.report.intent.subject.hedera_network !== "mainnet" &&
+         result.report.intent.subject.hedera_network !== "testnet")) {
+      throw new TypeError("Authorized Ingest triangulation requires a network-scoped Ingest subject");
+    }
+    const relationships = relationshipContext(
+      result.report, result.relationships, AUTHORIZED_RELATIONSHIPS,
+    );
+    const ids = new Set(result.relationships.map((entry) => entry.id));
+    const resolution = result.resolution;
+    for (const id of AUTHORIZED_RELATIONSHIPS) {
+      if (!ids.has(id)) throw new TypeError("Authorized Ingest triangulation is missing a required relationship");
+    }
+    if (!["resolved", "unauthorized", "forbidden", "not_found", "rate_limited", "unavailable", "invalid"].includes(resolution.authorized_core) ||
+        !["resolved", "unavailable", "invalid", "conflict", "not_requested", "not_resolved", "locator_unavailable"].includes(resolution.hedera_mirror) ||
+        !["resolved", "unavailable", "unsupported", "invalid", "conflict"].includes(resolution.ingest_receipt)) {
+      throw new TypeError("Invalid authorized Ingest resolution");
+    }
+    requireFinding(
+      result.report,
+      "triangulation.authorized_ingest.receipt_profile",
+      expectedOutcome(resolution.ingest_receipt),
+    );
+    const relationshipConflict = result.relationships.some((entry) => entry.status === "conflict");
+    const resolutionConflict = resolution.hedera_mirror === "conflict" ||
+      resolution.ingest_receipt === "invalid" || resolution.ingest_receipt === "conflict";
+    const complete = resolution.authorized_core === "resolved" &&
+      resolution.hedera_mirror === "resolved" && resolution.ingest_receipt === "resolved" &&
+      result.relationships.every((entry) => entry.status === "consistent");
+    const expectedState = relationshipConflict || resolutionConflict ? "conflict" : complete ? "consistent" : "incomplete";
+    if (state !== expectedState) throw new TypeError("Inconsistent authorized Ingest aggregate");
+    return { report: result.report, context: {
+      consistency: state,
+      relationships,
+      resolution: json(resolution),
     } };
   }
   if (input.kind !== "execution_triangulation") throw new TypeError("Unsupported portable report kind");
@@ -273,7 +363,7 @@ function context(input: PortableVerificationReportV1Input): { report: Verificati
     public_execution: json({ status: result.status, reason_code: result.reason_code,
       public_record_acquisition: result.public_record_acquisition, hedera_resolution: result.hedera_resolution,
       mirror_status: result.mirror.status, mirror_reason_code: result.mirror.reason_code }),
-    triangulation: json({ consistency: state, relationships: relationshipContext(report, result.comparison.relationships),
+    triangulation: json({ consistency: state, relationships: relationshipContext(report, result.comparison.relationships, PUBLIC_RELATIONSHIPS),
       targets: result.plan.hedera_targets, plan_relationships: result.plan.triangulation.relationships }),
   } };
 }

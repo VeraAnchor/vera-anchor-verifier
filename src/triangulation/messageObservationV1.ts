@@ -56,7 +56,11 @@ export type CoreMessageBindingV1Input = Readonly<{
  * Normalize Core's claimed ciphertext binding, not its decrypted plaintext.
  * Only comparison with separately recomputed Mirror bytes can corroborate it.
  */
-export function observeCoreMessageBindingV1(input: CoreMessageBindingV1Input): VerificationObservation {
+function coreMessageBindingObservation(
+  input: CoreMessageBindingV1Input,
+  source: "public_record" | "authorized_service",
+  resolverId?: string,
+): VerificationObservation {
   if (!OBSERVATION_ID_RE.test(input.id) || !input.subject ||
     typeof input.subject.id !== "string" || !input.subject.id) {
     throw new TypeError("Invalid Core message-binding observation");
@@ -75,8 +79,9 @@ export function observeCoreMessageBindingV1(input: CoreMessageBindingV1Input): V
   const reason = missing ? "CORE_MESSAGE_BINDING_UNAVAILABLE" : "CORE_MESSAGE_BINDING_INVALID";
   return Object.freeze({
     id: input.id,
-    source: "public_record" as const,
+    source,
     subject: Object.freeze({ ...input.subject }),
+    ...(resolverId ? { resolver_id: resolverId } : {}),
     facts: Object.freeze(valid ? [
       Object.freeze({ key: "publication.message_sha3_512", state: "available" as const, value: digest.toLowerCase() }),
       Object.freeze({ key: "publication.message_bytes", state: "available" as const, value: length }),
@@ -85,4 +90,13 @@ export function observeCoreMessageBindingV1(input: CoreMessageBindingV1Input): V
       Object.freeze({ key: "publication.message_bytes", state: "unavailable" as const, reason_code: reason }),
     ]),
   });
+}
+
+export function observeCoreMessageBindingV1(input: CoreMessageBindingV1Input): VerificationObservation {
+  return coreMessageBindingObservation(input, "public_record");
+}
+
+/** Normalize the same Core binding under an explicit authenticated-service provenance. */
+export function observeAuthorizedCoreMessageBindingV1(input: CoreMessageBindingV1Input): VerificationObservation {
+  return coreMessageBindingObservation(input, "authorized_service", "core.authorized-hcs.v1");
 }

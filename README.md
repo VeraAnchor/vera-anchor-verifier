@@ -8,10 +8,11 @@ The verifier is designed for relying parties that need deterministic verificatio
 
 ## What it verifies
 
-The v0.1 surface includes:
+The current surface includes:
 
 - Dataset and Ingest bundle, receipt, source-binding, and commitment recomputation.
 - Public Dataset and Ingest triangulation across local evidence, Vera Anchor Explorer publication records, and Hedera Mirror observations.
+- Authenticated Dataset and Ingest verification through caller-authorized Vera Anchor Core acquisition, local recomputation, and independent Hedera Mirror corroboration.
 - SAGE execution verification with independently supplied execution scope and expected program and result constraints.
 - Pinned HCS-1, HCS-2, HCS-11, HCS-13, HCS-14, and HCS-26 verification.
 - HCS-26 historical discovery and version resolution, canonical manifest verification, and integrity verification of manifest-declared HCS-1 files.
@@ -24,7 +25,7 @@ Verification results are intentionally scoped.
 
 A successful integrity check does not establish factual truth, publisher ownership, or code execution. Hedera Mirror observations provide independent corroboration of supported ledger data; they are not authenticated Hedera consensus proofs.
 
-v0.1 does not claim DID-controller authentication, historical account ownership, consensus-signature authentication, or independent cryptographic binding between Explorer-assisted decrypted plaintext and its publication ciphertext.
+The SDK does not claim DID-controller authentication, historical account ownership, consensus-signature authentication, or independent cryptographic proof that service-assisted decrypted plaintext originated from a particular publication ciphertext.
 
 Caller-controlled intent is part of the trust boundary. Subject identifiers, expected commitments, Hedera network selection, execution scope, and policy requirements must come from the relying party's trusted context rather than being copied from untrusted evidence.
 
@@ -38,7 +39,7 @@ npm install @veraanchor/verifier
 
 The package is ESM-only and has no runtime dependencies.
 
-Node.js 24 is recommended for the full v0.1 feature set. The supported runtime range is defined by the package metadata.
+Node.js 24 is recommended for the full feature set. The supported runtime range is defined by the package metadata.
 
 ## Library quickstart
 
@@ -123,7 +124,7 @@ npm exec -- vera-anchor policy assess \
 
 The CLI also supports Ingest verification and explicit public execution verification.
 
-See the [CLI reference](docs/cli-v0.1.md) for command options, JSON inputs, policy examples, and exit codes.
+See the [CLI reference](docs/cli.md) for command options, JSON inputs, policy examples, and exit codes.
 
 ## Verification model
 
@@ -155,7 +156,7 @@ Missing evidence and service outages do not become successful checks. Demonstrat
 
 The verifier never silently changes Hedera networks or selects a latest execution result when an exact result is required.
 
-## Offline and public verification
+## Offline, public, and authenticated verification
 
 Offline verification performs no resolver network requests. It operates only on caller-supplied evidence, source material, verification intent, and policy.
 
@@ -163,9 +164,17 @@ Public workflows are explicit. Resolver origins are controlled by the caller rat
 
 Vera Anchor Explorer publication resolution and Hedera Mirror corroboration are distinct observations. An original HCS anchor is not interpreted as a public publication receipt.
 
+Authenticated workflows are also explicit. They use caller-supplied authorization to acquire permitted private evidence through Vera Anchor Core while keeping authentication outside the deterministic verification kernel.
+
+Core remains authoritative for access control and service-assisted private-evidence recovery. The verifier independently recomputes supported Dataset or Ingest checks and, where required, separately corroborates the referenced HCS message through Hedera Mirror.
+
+Credentials are scoped to the configured Core resolver and are not forwarded to Mirror, Explorer, or evidence-selected URLs. Credentials and raw decrypted payloads are excluded from portable reports.
+
+See [Authenticated verification](docs/authenticated-verification.md) for the supported library workflow and security boundaries.
+
 ## HCS standards verification
 
-The v0.1 standards surface supports pinned verification behavior for:
+The standards surface supports pinned verification behavior for:
 
 - HCS-1 content integrity and bounded file reconstruction.
 - HCS-2 historical registry entries.
@@ -215,6 +224,7 @@ See [Conformance](docs/conformance.md) for the current coverage and reproducibil
 ## Documentation
 
 - [CLI reference](docs/cli-v0.1.md)
+- [Authenticated verification](docs/authenticated-verification.md)
 - [Verification semantics](docs/verification-semantics.md)
 - [Threat model](docs/threat-model.md)
 - [Conformance](docs/conformance.md)

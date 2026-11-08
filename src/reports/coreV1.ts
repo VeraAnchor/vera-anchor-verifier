@@ -10,7 +10,7 @@ const HEX_512 = /^[0-9a-f]{128}$/i;
 const SUBJECT_KINDS = ["artifact", "dataset", "ingest", "evidence_package", "merkle_anchor",
   "merkle_root", "merkle_leaf", "execution", "result"];
 const OUTCOMES = ["pass", "fail", "indeterminate", "unsupported", "skipped"];
-const SOURCES = ["provided_evidence", "public_record", "hedera_mirror", "local_computation"];
+const SOURCES = ["provided_evidence", "public_record", "authorized_service", "hedera_mirror", "local_computation"];
 const MAX_CANONICAL_BYTES = 1024 * 1024;
 
 type JsonRecord = Record<string, unknown>;

@@ -2,6 +2,22 @@
 
 All notable changes to `@veraanchor/verifier` are documented here.
 
+## [Unreleased]
+
+### Added
+
+- Authenticated Dataset and Ingest verification through caller-authorized Vera Anchor Core acquisition, local recomputation, and independent Hedera Mirror corroboration.
+- `AuthProviderV1` and `createStaticBearerAuthProviderV1` for explicit authenticated evidence acquisition.
+- Authenticated Dataset and Ingest portable-report and policy workflows.
+- Hermetic authenticated integration coverage for authorization failure, Mirror unavailability, Core/Hedera conflicts, local commitment contradictions, and credential isolation.
+- Offline, policy, and authenticated Ingest examples, plus an authenticated Dataset example.
+
+### Security
+
+- Authenticated credentials are scoped to the configured Core resolver and are not forwarded to Hedera Mirror, Vera Anchor Explorer, redirects, or evidence-selected URLs.
+- Core authorization, service-assisted decryption, and server verification fields are not treated as verification proof.
+- Authenticated portable reports exclude authorization credentials and raw decrypted payloads.
+
 ## [0.1.0] - 2026-11-03
 
 Initial public release.

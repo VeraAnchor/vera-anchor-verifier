@@ -8,13 +8,19 @@ import { triangulateDatasetV1, triangulateIngestV1,
   type PublicTriangulationV1Config, type PublicIngestTriangulationV1Input } from "../triangulation/publicV1.js";
 import { triangulatePublicExecutionV1,
   type PublicExecutionTriangulationV1Config } from "../triangulation/executionPublicV1.js";
+import { triangulateAuthorizedDatasetV1,
+  type AuthorizedDatasetTriangulationV1Config, type AuthorizedDatasetTriangulationV1Input }
+  from "../triangulation/authorizedDatasetV1.js";
+import { triangulateAuthorizedIngestV1,
+  type AuthorizedIngestTriangulationV1Config, type AuthorizedIngestTriangulationV1Input }
+  from "../triangulation/authorizedIngestV1.js";
 import { VERIFICATION_POLICY_SCHEMA_VERSION, type VerificationPolicyAssuranceV1,
   type VerificationPolicyDecisionV1, type VerificationPolicyRequirementV1, type VerificationPolicyWorkflowV1,
   type VerificationPolicyV1 } from "./contractV1.js";
 
 const CHECK_ID = /^[a-z][a-z0-9._:-]{0,159}$/;
 const ASSURANCE: readonly VerificationPolicyAssuranceV1[] = ["mirror_corroboration"];
-const KINDS = ["verification", "execution", "independent_standards", "public_triangulation", "execution_triangulation"];
+const KINDS = ["verification", "execution", "independent_standards", "public_triangulation", "authorized_dataset_triangulation", "authorized_ingest_triangulation", "execution_triangulation"];
 
 type Row = Record<string, unknown>;
 type Requirement = VerificationPolicyRequirementV1;
@@ -73,7 +79,7 @@ function checkedPolicy(value: VerificationPolicyV1): VerificationPolicyV1 {
   const id = identifier(subject.id, "policy subject ID", 256);
   const network = subject.hedera_network;
   if (network !== undefined && network !== "testnet" && network !== "mainnet") throw new TypeError("Invalid policy network");
-  if (["execution", "independent_standards", "public_triangulation", "execution_triangulation"].includes(p.report_kind as string) && !network) {
+  if (["execution", "independent_standards", "public_triangulation", "authorized_dataset_triangulation", "authorized_ingest_triangulation", "execution_triangulation"].includes(p.report_kind as string) && !network) {
     throw new TypeError("Network-scoped policy requires explicit Hedera network");
   }
   const required_checks = boundedList(p.required_checks, "required checks", 64, (x) => {
@@ -135,6 +141,12 @@ function assurance(report: PortableVerificationReportV1, requirement: Verificati
       const resolution = ctx.resolution as Row | undefined;
       const rels = ctx.relationships as { id: string; status: string }[] | undefined;
       established = resolution?.hedera_mirror === "resolved" && rels?.some((r) => r.id === "public_record_hedera" && r.status === "consistent") === true;
+    } else if (report.kind === "authorized_dataset_triangulation" ||
+        report.kind === "authorized_ingest_triangulation") {
+      const resolution = ctx.resolution as Row | undefined;
+      const rels = ctx.relationships as { id: string; status: string }[] | undefined;
+      established = resolution?.hedera_mirror === "resolved" && rels?.some((r) =>
+        r.id === "authorized_hedera" && r.status === "consistent") === true;
     } else if (report.kind === "execution_triangulation") {
       const pub = ctx.public_execution as Row | undefined;
       const tri = ctx.triangulation as Row | undefined;
@@ -180,6 +192,29 @@ function publicEvidence(report: PortableVerificationReportV1): Requirement | nul
   return null;
 }
 
+/** Authorized acquisition must complete private profile binding and independent HCS corroboration. */
+function authorizedEvidence(report: PortableVerificationReportV1): Requirement | null {
+  if (report.kind !== "authorized_dataset_triangulation" &&
+      report.kind !== "authorized_ingest_triangulation") return null;
+  const ctx = report.context as Row;
+  const resolution = ctx.resolution as Row;
+  const rels = ctx.relationships as { id: string; status: string }[];
+  const profileStatus = report.kind === "authorized_dataset_triangulation"
+    ? resolution.dataset_registry_event
+    : resolution.ingest_receipt;
+  const conflicting = ctx.consistency === "conflict" ||
+    resolution.authorized_core === "invalid" ||
+    resolution.hedera_mirror === "invalid" || resolution.hedera_mirror === "conflict" ||
+    profileStatus === "invalid" || profileStatus === "conflict";
+  const complete = ctx.consistency === "consistent" &&
+    resolution.authorized_core === "resolved" && resolution.hedera_mirror === "resolved" &&
+    profileStatus === "resolved" &&
+    ["provided_authorized", "authorized_hedera"].every((id) =>
+      rels.some((rel) => rel.id === id && rel.status === "consistent"));
+  return outcome("verification.authorized_evidence", conflicting ? "fail" : complete ? "pass" : "unresolved",
+    conflicting ? "POLICY_AUTHORIZED_EVIDENCE_CONFLICT" : complete ? null : "POLICY_AUTHORIZED_EVIDENCE_INCOMPLETE");
+}
+
 function decide(reportValue: unknown, value: VerificationPolicyV1,
   authority: VerificationPolicyDecisionV1["authority"]): VerificationPolicyDecisionV1 {
   const policy = checkedPolicy(value);
@@ -215,6 +250,8 @@ function decide(reportValue: unknown, value: VerificationPolicyV1,
   for (const check of policy.required_assurance ?? []) req.push(assurance(report, check));
   const publicRequirement = publicEvidence(report);
   if (publicRequirement) req.push(publicRequirement);
+  const authorizedRequirement = authorizedEvidence(report);
+  if (authorizedRequirement) req.push(authorizedRequirement);
   // An SDK invocation alone is not substantive proof. At least one *required*
   // successful check must cite material recomputed by the verifier itself.
   // A scope match or a producer-supplied claim is not enough to authorize.
@@ -296,6 +333,61 @@ export async function triangulateDatasetWithPolicyV1(config: PublicTriangulation
   const checked = checkedPublicPolicy(input, policy, "public_triangulation", "dataset");
   const result = await triangulateDatasetV1(config, input);
   const report = createPortableVerificationReportV1({ kind: "public_triangulation", result });
+  return Object.freeze({ report, policy: decide(report, checked, "sdk_verification") });
+}
+
+/** Authenticated Dataset verification is network-scoped and must match the relying-party subject exactly. */
+function checkedAuthorizedDatasetPolicy(
+  input: AuthorizedDatasetTriangulationV1Input,
+  policy: VerificationPolicyV1,
+): VerificationPolicyV1 {
+  const checked = checkedPolicy(policy);
+  const actual = input.intent?.subject;
+  const expected = checked.subject;
+  if (checked.report_kind !== "authorized_dataset_triangulation" || !actual || actual.kind !== "dataset" ||
+      expected.kind !== "dataset" || actual.id !== expected.id ||
+      !actual.hedera_network || actual.hedera_network !== expected.hedera_network) {
+    throw new TypeError("Authorized Dataset verification request does not match relying-party policy intent");
+  }
+  return checked;
+}
+
+/** SDK-owned Dataset recomputation, caller-authorized Core decryption, and independent Hedera corroboration. */
+export async function triangulateAuthorizedDatasetWithPolicyV1(
+  config: AuthorizedDatasetTriangulationV1Config,
+  input: AuthorizedDatasetTriangulationV1Input,
+  policy: VerificationPolicyV1,
+): Promise<VerificationPolicyWorkflowV1> {
+  const checked = checkedAuthorizedDatasetPolicy(input, policy);
+  const result = await triangulateAuthorizedDatasetV1(config, input);
+  const report = createPortableVerificationReportV1({ kind: "authorized_dataset_triangulation", result });
+  return Object.freeze({ report, policy: decide(report, checked, "sdk_verification") });
+}
+
+function checkedAuthorizedIngestPolicy(
+  input: AuthorizedIngestTriangulationV1Input,
+  policy: VerificationPolicyV1,
+): VerificationPolicyV1 {
+  const checked = checkedPolicy(policy);
+  const actual = input.intent?.subject;
+  const expected = checked.subject;
+  if (checked.report_kind !== "authorized_ingest_triangulation" || !actual || actual.kind !== "ingest" ||
+      expected.kind !== "ingest" || actual.id !== expected.id ||
+      !actual.hedera_network || actual.hedera_network !== expected.hedera_network) {
+    throw new TypeError("Authorized Ingest verification request does not match relying-party policy intent");
+  }
+  return checked;
+}
+
+/** SDK-owned Ingest recomputation, caller-authorized Core decryption, and independent Hedera corroboration. */
+export async function triangulateAuthorizedIngestWithPolicyV1(
+  config: AuthorizedIngestTriangulationV1Config,
+  input: AuthorizedIngestTriangulationV1Input,
+  policy: VerificationPolicyV1,
+): Promise<VerificationPolicyWorkflowV1> {
+  const checked = checkedAuthorizedIngestPolicy(input, policy);
+  const result = await triangulateAuthorizedIngestV1(config, input);
+  const report = createPortableVerificationReportV1({ kind: "authorized_ingest_triangulation", result });
   return Object.freeze({ report, policy: decide(report, checked, "sdk_verification") });
 }
 

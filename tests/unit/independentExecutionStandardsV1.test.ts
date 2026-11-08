@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import * as zlib from "node:zlib";
 import { compress as zstdCompress, decompress as zstdDecompress } from "@mongodb-js/zstd";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { runVerifierCliV1 } from "../../src/cli/commandV1.js";
 import { VERIFICATION_POLICY_SCHEMA_VERSION } from "../../src/policy/contractV1.js";
 import { computeExecutionDomainSeparatedSha3_512 } from "../../src/profiles/execution/recomputationV1.js";
@@ -99,12 +99,13 @@ async function fixture() {
   await hcs1(routes, "0.0.8100", skillFile);
 
   const evidence = { available: true, contract_version: "1.0.0",
-    execution: { program: "sage", job_id: JOB, hedera_network: "testnet" },
+    execution: { program: "sage", job_id: JOB, proof_date: "2026-10-15", hedera_network: "testnet" },
     agents: { requester, executor },
     capability: { standard: "HCS-26", discovery_registry_topic_id: "0.0.8001",
       skill_uid: "42", skill_version: "1.0.0", version_registry_topic_id: "0.0.8002",
       version_sequence_number: 3, manifest_hcs1_ref: "hcs://1/0.0.8003",
-      manifest_checksum_sha256: manifest.sha256, repository_commit: commit },
+      manifest_checksum_sha256: manifest.sha256, repository_uri: "https://example.org/capability.git",
+      repository_commit: commit },
     standards: { schemas: [{ role: "parameters", ordinal: 0, registry_topic_id: "0.0.9001",
       registry_sequence_number: 7, hcs13_ref: "hcs://13/0.0.9001#7",
       schema_checksum_sha256: schema.sha256 }] },
@@ -263,7 +264,8 @@ describe("independent SAGE standards integration", () => {
 
     const f = await fixture();
     const dir = await mkdtemp(join(tmpdir(), "va-standards-cli-"));
-    vi.stubGlobal("fetch", f.fetch_impl);
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = f.fetch_impl;
 
     try {
       const evidencePath = join(dir, "evidence.json");
@@ -365,7 +367,7 @@ describe("independent SAGE standards integration", () => {
         authenticity: "not_checked",
       });
     } finally {
-      vi.unstubAllGlobals();
+      globalThis.fetch = originalFetch;
       await rm(dir, { recursive: true, force: true });
     }
   });

@@ -107,8 +107,38 @@ export {
 export type { ExplorerPublicationDisclosureV1, ExplorerPublishedEvidenceV1 } from "./resolvers/explorerPublicationV1.js";
 export type { ExplorerPublicTransportV1 } from "./resolvers/explorerTransportV1.js";
 
-export { resolveHederaPublicationV1 } from "./resolvers/hederaMirrorV1.js";
-export type { HederaMirrorV1Config, HederaPublicationObservationV1 } from "./resolvers/hederaMirrorV1.js";
+// Optional authenticated evidence acquisition. Authentication remains outside
+// the deterministic verification kernel; Core remains authoritative for access.
+export { AuthProviderContractErrorV1, createStaticBearerAuthProviderV1 } from "./auth/authProviderV1.js";
+export type { AuthProviderV1, CoreAuthorizationMaterialV1, CoreAuthorizationRequestV1 } from "./auth/authProviderV1.js";
+export { resolveAuthorizedHcsEvidenceV1 } from "./resolvers/coreAuthorizedV1.js";
+export type { AuthorizedHcsEvidenceV1, AuthorizedHcsEvidenceV1Request, AuthorizedHcsEvidenceV1Result,
+  CoreAuthorizedV1Config } from "./resolvers/coreAuthorizedV1.js";
+export { resolveAuthorizedHcsObservationsV1 } from "./resolvers/authorizedObservationV1.js";
+export type { AuthorizedHcsObservationsV1Config, AuthorizedHcsObservationsV1Input,
+  AuthorizedHcsObservationsV1Result } from "./resolvers/authorizedObservationV1.js";
+
+export { triangulateAuthorizedHcsV1 } from "./triangulation/authorizedHcsV1.js";
+export type { AuthorizedHcsTriangulationV1Input, AuthorizedHcsTriangulationV1Result }
+  from "./triangulation/authorizedHcsV1.js";
+
+export { parseDatasetRegistryVersionCreatedV1 } from "./profiles/dataset/registryEventV1.js";
+export type { DatasetRegistryVersionCreatedV1, DatasetRegistryVersionCreatedV1Result }
+  from "./profiles/dataset/registryEventV1.js";
+export { triangulateAuthorizedDatasetV1 } from "./triangulation/authorizedDatasetV1.js";
+export type { AuthorizedDatasetHcsReferenceV1, AuthorizedDatasetTriangulationV1Config,
+  AuthorizedDatasetTriangulationV1Input, AuthorizedDatasetTriangulationV1Result }
+  from "./triangulation/authorizedDatasetV1.js";
+
+export { parseAuthorizedIngestReceiptV1, triangulateAuthorizedIngestV1 }
+  from "./triangulation/authorizedIngestV1.js";
+export type { AuthorizedIngestHcsReferenceV1, AuthorizedIngestReceiptV1Result,
+  AuthorizedIngestTriangulationV1Config, AuthorizedIngestTriangulationV1Input,
+  AuthorizedIngestTriangulationV1Result } from "./triangulation/authorizedIngestV1.js";
+
+export { resolveHederaMessageV1, resolveHederaPublicationV1 } from "./resolvers/hederaMirrorV1.js";
+export type { HederaMessageLocatorV1, HederaMessageObservationV1,
+  HederaMirrorV1Config, HederaPublicationObservationV1 } from "./resolvers/hederaMirrorV1.js";
 export { triangulateDatasetV1, triangulateIngestV1 } from "./triangulation/publicV1.js";
 export type { PublicTriangulationV1Config, PublicTriangulationV1Result, PublicIngestTriangulationV1Input } from "./triangulation/publicV1.js";
 
@@ -198,5 +228,6 @@ export type { VerificationPolicyAssuranceV1, VerificationPolicyV1, VerificationP
   VerificationPolicyDecisionV1, VerificationPolicyWorkflowV1 } from "./policy/contractV1.js";
 export { assessPortableVerificationPolicyV1, verifyDatasetWithPolicyV1,
   verifyIngestWithPolicyV1, verifyExecutionWithPolicyV1,
-  triangulateDatasetWithPolicyV1, triangulateIngestWithPolicyV1,
+  triangulateDatasetWithPolicyV1, triangulateAuthorizedDatasetWithPolicyV1,
+  triangulateAuthorizedIngestWithPolicyV1, triangulateIngestWithPolicyV1,
   triangulateExecutionWithPolicyV1, verifyExecutionStandardsWithPolicyV1 } from "./policy/evaluateV1.js";

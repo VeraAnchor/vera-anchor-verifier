@@ -25,12 +25,21 @@ export type HederaMirrorV1Config = Readonly<{
   max_response_bytes?: number;
 }>;
 
-export type HederaPublicationObservationV1 = Readonly<{
+export type HederaMessageLocatorV1 = Readonly<{
+  hedera_network: HederaNetwork;
+  topic_id: string;
+  sequence_number: number;
+  transaction_id?: string | null;
+}>;
+
+export type HederaMessageObservationV1 = Readonly<{
   status: "resolved" | "unavailable" | "invalid" | "conflict";
   reason_code: string | null;
   /** Digest recomputed over independently retrieved, fully reassembled HCS bytes. */
   observation: VerificationObservation | null;
 }>;
+
+export type HederaPublicationObservationV1 = HederaMessageObservationV1;
 
 type TopicRow = Readonly<{
   topic_id: string;
@@ -234,24 +243,24 @@ function output(status: HederaPublicationObservationV1["status"], reason: string
 }
 
 /**
- * Directly observe a public publication on a separately configured Hedera Mirror.
- * The publication locator is a CLAIM until resolved; Mirror data is a distinct
- * network observation, not cryptographic consensus authentication.
+ * Directly observe an explicitly scoped HCS message on a configured Hedera Mirror.
+ * The locator is a claim until resolved; Mirror data is a distinct network
+ * observation, not cryptographic consensus authentication.
  */
-export async function resolveHederaPublicationV1(
+export async function resolveHederaMessageV1(
   config: HederaMirrorV1Config,
-  publication: ExplorerPublicationV1,
+  locator: HederaMessageLocatorV1,
   subject: VerificationSubject,
-): Promise<HederaPublicationObservationV1> {
-  if (!publication || (publication.hedera_network !== "mainnet" && publication.hedera_network !== "testnet") ||
-    publication.hedera_network !== subject.hedera_network || !subject.id ||
-    !TOPIC.test(publication.topic_id ?? "") || !Number.isSafeInteger(publication.sequence_number) ||
-    publication.sequence_number === null || publication.sequence_number < 1) {
+): Promise<HederaMessageObservationV1> {
+  if (!locator || (locator.hedera_network !== "mainnet" && locator.hedera_network !== "testnet") ||
+    locator.hedera_network !== subject.hedera_network || !subject.id ||
+    !TOPIC.test(locator.topic_id ?? "") || !Number.isSafeInteger(locator.sequence_number) ||
+    locator.sequence_number < 1) {
     return output("unavailable", "MIRROR_MESSAGE_LOCATOR_UNAVAILABLE");
   }
-  const network = publication.hedera_network;
-  const topic = publication.topic_id!;
-  const sequence = publication.sequence_number;
+  const network = locator.hedera_network;
+  const topic = locator.topic_id;
+  const sequence = locator.sequence_number;
   try {
     const reply = await read(config, network, `topics/${topic}/messages/${sequence}`);
     if (!reply) return output("unavailable", "MIRROR_MESSAGE_NOT_FOUND");
@@ -259,8 +268,8 @@ export async function resolveHederaPublicationV1(
     const bytes = await reassembled(config, network, topic, first);
     let transaction: string | null = null;
     let txConsensus: string | null = null;
-    if (publication.transaction_id) {
-      transaction = transactionId(publication.transaction_id);
+    if (locator.transaction_id) {
+      transaction = transactionId(locator.transaction_id);
       const txPath = transaction.replace(/@(\d+)\./, "-$1-");
       const tx = await read(config, network, `transactions/${txPath}`);
       if (!tx) return output("unavailable", "MIRROR_TRANSACTION_NOT_FOUND");
@@ -295,4 +304,19 @@ export async function resolveHederaPublicationV1(
     if (error instanceof TypeError) return output("invalid", "MIRROR_REFERENCE_INVALID");
     throw error;
   }
+}
+
+/** Explorer-publication compatibility wrapper over the generic HCS message resolver. */
+export async function resolveHederaPublicationV1(
+  config: HederaMirrorV1Config,
+  publication: ExplorerPublicationV1,
+  subject: VerificationSubject,
+): Promise<HederaPublicationObservationV1> {
+  if (!publication) return output("unavailable", "MIRROR_MESSAGE_LOCATOR_UNAVAILABLE");
+  return resolveHederaMessageV1(config, {
+    hedera_network: publication.hedera_network,
+    topic_id: publication.topic_id ?? "",
+    sequence_number: publication.sequence_number ?? 0,
+    transaction_id: publication.transaction_id,
+  }, subject);
 }

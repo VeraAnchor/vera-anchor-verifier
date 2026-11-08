@@ -16,6 +16,8 @@ Public GitHub issues are appropriate for non-sensitive defects, documentation pr
 
 ## Security scope
 
-The verifier processes untrusted evidence and, in explicitly selected public workflows, untrusted network responses. Security reports involving parser boundaries, resource exhaustion, path handling, resolver origin controls, redirect handling, network-scope enforcement, commitment verification, policy bypass or incorrect verification outcomes are in scope.
+The verifier processes untrusted evidence and, in explicitly selected public or authenticated workflows, untrusted network responses. Security reports involving parser boundaries, resource exhaustion, path handling, resolver origin controls, redirect handling, credential handling, private-evidence disclosure, network-scope enforcement, commitment verification, policy bypass or incorrect verification outcomes are in scope.
 
-A successful integrity or Mirror-corroboration result is not a claim of factual truth, publisher ownership, DID-controller authentication or Hedera consensus-signature authentication. See [docs/verification-semantics.md](docs/verification-semantics.md) for the supported assurance model.
+For authenticated workflows, Vera Anchor Core remains authoritative for authentication and tenant authorization. Reports involving unauthorized private-evidence access through the verifier, credential leakage or forwarding, fail-open fallback after authorization failure, or acceptance of Core authorization, decryption, or server verification fields as verification proof are in scope.
+
+A successful integrity, Mirror-corroboration, Core authorization or service-assisted decryption result is not a claim of factual truth, publisher ownership, DID-controller authentication or Hedera consensus-signature authentication. See [docs/verification-semantics.md](docs/verification-semantics.md) for the supported assurance model.

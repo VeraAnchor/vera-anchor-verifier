@@ -14,9 +14,10 @@ const SHA256 = /^[0-9a-f]{64}$/;
 const ID = /^[a-z][a-z0-9._:-]{0,159}$/;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const OUTCOMES = ["pass", "fail", "indeterminate", "unsupported", "skipped"];
-const KINDS = ["verification", "execution", "independent_standards", "public_triangulation", "execution_triangulation"];
+const KINDS = ["verification", "execution", "independent_standards", "public_triangulation", "authorized_dataset_triangulation", "authorized_ingest_triangulation", "execution_triangulation"];
 const RESOLUTION = ["resolved", "not_found", "unavailable", "invalid", "conflict", "verification_material_unavailable", "unsupported"];
-const RELATIONSHIPS = ["provided_public_record", "public_record_hedera", "provided_hedera"];
+const PUBLIC_RELATIONSHIPS = ["provided_public_record", "public_record_hedera", "provided_hedera"];
+const AUTHORIZED_RELATIONSHIPS = ["provided_authorized", "authorized_hedera"];
 
 type Json = null | string | number | boolean | Json[] | { [key: string]: Json };
 type Row = Record<string, Json>;
@@ -207,12 +208,16 @@ function standards(value: Json | undefined, report: VerificationReport): void {
   finding(report, "standards.references_resolved", state === "verified" ? "pass" : state === "failed" ? "fail" : "indeterminate");
 }
 
-function relationships(value: Json | undefined, report: VerificationReport): Json[] {
+function relationships(
+  value: Json | undefined,
+  report: VerificationReport,
+  allowedIds: readonly string[],
+): Json[] {
   const entries = array(value, "triangulation relationships", 3);
   const seen = new Set<string>();
   for (const item of entries) {
     const rel = shape(item, "triangulation relationship", ["id", "status", "fact_comparisons"]);
-    const id = oneOf(rel.id, "triangulation relationship ID", RELATIONSHIPS);
+    const id = oneOf(rel.id, "triangulation relationship ID", allowedIds);
     if (seen.has(id)) throw new TypeError("Duplicate triangulation relationship");
     seen.add(id);
     const state = oneOf(rel.status, "relationship status", ["consistent", "conflict", "incomplete", "not_applicable"]);
@@ -270,7 +275,7 @@ function planRelationships(value: Json | undefined): void {
   const ids = new Set<string>();
   for (const value of rows) {
     const item = shape(value, "relationship plan", ["id", "left_observation_id", "right_observation_id", "comparisons"]);
-    const id = oneOf(item.id, "plan relationship ID", RELATIONSHIPS);
+    const id = oneOf(item.id, "plan relationship ID", PUBLIC_RELATIONSHIPS);
     if (ids.has(id)) throw new TypeError("Duplicate plan relationship");
     ids.add(id);
     const leftId = identifier(item.left_observation_id, "left observation ID");
@@ -332,12 +337,72 @@ function context(kind: string, value: Json | undefined, report: VerificationRepo
     if (report.intent.subject.kind !== "dataset" && report.intent.subject.kind !== "ingest") {
       throw new TypeError("Invalid public triangulation subject");
     }
-    const rels = relationships(row.relationships, report);
+    const rels = relationships(row.relationships, report, PUBLIC_RELATIONSHIPS);
     consistency(row.consistency, rels);
     const resolution = shape(row.resolution, "public resolution", ["public_record", "publication_disclosure", "hedera_mirror"]);
     oneOf(resolution.public_record, "public record status", RESOLUTION);
     oneOf(resolution.publication_disclosure, "publication disclosure status", RESOLUTION);
     oneOf(resolution.hedera_mirror, "Hedera Mirror status", [...RESOLUTION, "not_requested"]);
+  } else if (kind === "authorized_dataset_triangulation") {
+    shape(value, "authorized Dataset triangulation context", ["consistency", "relationships", "resolution"]);
+    if (report.intent.subject.kind !== "dataset" ||
+        (report.intent.subject.hedera_network !== "mainnet" && report.intent.subject.hedera_network !== "testnet")) {
+      throw new TypeError("Invalid authorized Dataset triangulation subject");
+    }
+    const rels = relationships(row.relationships, report, AUTHORIZED_RELATIONSHIPS);
+    const state = consistency(row.consistency, rels);
+    const ids = new Set(rels.map((entry) => object(entry, "relationship").id));
+    for (const id of AUTHORIZED_RELATIONSHIPS) {
+      if (!ids.has(id)) throw new TypeError("Missing authorized Dataset relationship");
+    }
+    const resolution = shape(row.resolution, "authorized Dataset resolution",
+      ["authorized_core", "hedera_mirror", "dataset_registry_event"]);
+    const coreStatus = oneOf(resolution.authorized_core, "authorized Core status",
+      ["resolved", "unauthorized", "forbidden", "not_found", "rate_limited", "unavailable", "invalid"]);
+    const mirrorStatus = oneOf(resolution.hedera_mirror, "authorized Dataset Mirror status",
+      ["resolved", "unavailable", "invalid", "conflict", "not_requested", "not_resolved", "locator_unavailable"]);
+    const eventStatus = oneOf(resolution.dataset_registry_event, "Dataset Registry event status",
+      ["resolved", "unavailable", "unsupported", "invalid", "conflict"]);
+    finding(report, "triangulation.authorized_dataset.registry_event_profile",
+      eventStatus === "resolved" ? "pass" : eventStatus === "invalid" || eventStatus === "conflict" ? "fail" :
+        eventStatus === "unsupported" ? "unsupported" : "indeterminate");
+    const relationshipConflict = rels.some((entry) => object(entry, "relationship").status === "conflict");
+    const resolutionConflict = mirrorStatus === "conflict" ||
+      eventStatus === "invalid" || eventStatus === "conflict";
+    const complete = coreStatus === "resolved" && mirrorStatus === "resolved" && eventStatus === "resolved" &&
+      rels.every((entry) => object(entry, "relationship").status === "consistent");
+    const expectedState = relationshipConflict || resolutionConflict ? "conflict" : complete ? "consistent" : "incomplete";
+    if (state !== expectedState) throw new TypeError("Inconsistent authorized Dataset aggregate");
+  } else if (kind === "authorized_ingest_triangulation") {
+    shape(value, "authorized Ingest triangulation context", ["consistency", "relationships", "resolution"]);
+    if (report.intent.subject.kind !== "ingest" ||
+        (report.intent.subject.hedera_network !== "mainnet" && report.intent.subject.hedera_network !== "testnet")) {
+      throw new TypeError("Invalid authorized Ingest triangulation subject");
+    }
+    const rels = relationships(row.relationships, report, AUTHORIZED_RELATIONSHIPS);
+    const state = consistency(row.consistency, rels);
+    const ids = new Set(rels.map((entry) => object(entry, "relationship").id));
+    for (const id of AUTHORIZED_RELATIONSHIPS) {
+      if (!ids.has(id)) throw new TypeError("Missing authorized Ingest relationship");
+    }
+    const resolution = shape(row.resolution, "authorized Ingest resolution",
+      ["authorized_core", "hedera_mirror", "ingest_receipt"]);
+    const coreStatus = oneOf(resolution.authorized_core, "authorized Core status",
+      ["resolved", "unauthorized", "forbidden", "not_found", "rate_limited", "unavailable", "invalid"]);
+    const mirrorStatus = oneOf(resolution.hedera_mirror, "authorized Ingest Mirror status",
+      ["resolved", "unavailable", "invalid", "conflict", "not_requested", "not_resolved", "locator_unavailable"]);
+    const receiptStatus = oneOf(resolution.ingest_receipt, "Ingest receipt status",
+      ["resolved", "unavailable", "unsupported", "invalid", "conflict"]);
+    finding(report, "triangulation.authorized_ingest.receipt_profile",
+      receiptStatus === "resolved" ? "pass" : receiptStatus === "invalid" || receiptStatus === "conflict" ? "fail" :
+        receiptStatus === "unsupported" ? "unsupported" : "indeterminate");
+    const relationshipConflict = rels.some((entry) => object(entry, "relationship").status === "conflict");
+    const resolutionConflict = mirrorStatus === "conflict" ||
+      receiptStatus === "invalid" || receiptStatus === "conflict";
+    const complete = coreStatus === "resolved" && mirrorStatus === "resolved" && receiptStatus === "resolved" &&
+      rels.every((entry) => object(entry, "relationship").status === "consistent");
+    const expectedState = relationshipConflict || resolutionConflict ? "conflict" : complete ? "consistent" : "incomplete";
+    if (state !== expectedState) throw new TypeError("Inconsistent authorized Ingest aggregate");
   } else if (kind === "execution_triangulation") {
     if (report.intent.subject.kind !== "execution") throw new TypeError("Invalid execution triangulation subject");
     const resolved = Object.hasOwn(row, "triangulation");
@@ -349,7 +414,7 @@ function context(kind: string, value: Json | undefined, report: VerificationRepo
     if (resolved) {
       hash(row.source_core_sha3_512, "source core digest");
       const tri = shape(row.triangulation, "execution triangulation", ["consistency", "relationships", "targets", "plan_relationships"]);
-      const rels = relationships(tri.relationships, report);
+      const rels = relationships(tri.relationships, report, PUBLIC_RELATIONSHIPS);
       consistency(tri.consistency, rels);
       executionTargets(tri.targets, report);
       planRelationships(tri.plan_relationships);
