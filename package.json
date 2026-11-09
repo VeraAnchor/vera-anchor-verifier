@@ -1,13 +1,15 @@
 {
-  "name": "@vera-anchor/verifier",
-  "version": "0.0.0",
-  "private": true,
-  "description": "Independent, read-only verification of verifiable digital evidence",
-  "license": "Apache-2.0",
+  "name": "@veraanchor/verifier",
+  "version": "0.2.0",
+  "description": "Independent, read-only verification of Vera Anchor evidence and supported HCS records",
+  "license": "MIT",
   "type": "module",
   "sideEffects": false,
+  "bin": {
+    "vera-anchor": "./dist/cli.js"
+  },
   "engines": {
-    "node": "^22.14.0 || ^24.0.0"
+    "node": "^22.15.0 || ^24.0.0"
   },
   "exports": {
     ".": {
@@ -18,9 +20,14 @@
   "types": "./dist/index.d.ts",
   "files": [
     "dist",
+    "docs",
+    "examples",
+    "CHANGELOG.md",
+    "CONTRIBUTING.md",
     "LICENSE",
     "NOTICE",
-    "README.md"
+    "README.md",
+    "SECURITY.md"
   ],
   "repository": {
     "type": "git",
@@ -44,7 +51,17 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.15",
+    "@mongodb-js/zstd": "2.0.1",
+    "@types/node": "22.20.5",
     "typescript": "6.0.3",
-    "vitest": "5.0.0"
-  }
+    "vitest": "5.1.0"
+  },
+  "keywords": [
+    "vera-anchor",
+    "verification",
+    "digital-evidence",
+    "hedera",
+    "hcs",
+    "provenance"
+  ]
 }

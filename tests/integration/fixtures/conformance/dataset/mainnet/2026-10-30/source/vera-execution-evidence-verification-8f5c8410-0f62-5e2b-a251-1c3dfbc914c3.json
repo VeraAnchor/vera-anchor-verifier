@@ -1,0 +1,979 @@
+{
+  "schema_version": "vera.evidence-verification.v1",
+  "ok": true,
+  "kind": "evidence_verification",
+  "subject_kind": "execution",
+  "status": "consistent",
+  "reason_code": null,
+  "public_record_status": "resolved",
+  "report": {
+    "schema_version": "vera.evidence-triangulation.v1",
+    "verifier_version": "1.1.0",
+    "subject": {
+      "kind": "execution",
+      "id": "8f5c8410-0f62-5e2b-a251-1c3dfbc914c3",
+      "hedera_network": "mainnet"
+    },
+    "status": "consistent",
+    "summary": {
+      "total_relationships": 3,
+      "applicable_relationships": 1,
+      "matched": 1,
+      "mismatched": 0,
+      "unavailable": 0,
+      "not_applicable": 2
+    },
+    "authorities": [
+      {
+        "authority": "provided_evidence",
+        "state": "not_applicable",
+        "reason_code": "PROVIDED_EVIDENCE_NOT_SUPPLIED",
+        "observation": null
+      },
+      {
+        "authority": "public_record",
+        "state": "resolved",
+        "reason_code": null,
+        "observation": {
+          "resolver_id": "explorer.public-execution-evidence.v1",
+          "source_type": "vera_anchor_public_view",
+          "observed_at": null
+        }
+      },
+      {
+        "authority": "hedera",
+        "state": "resolved",
+        "reason_code": null,
+        "observation": {
+          "resolver_id": "explorer.hedera-mirror-authority.v1",
+          "source_type": "hedera_mirror_rest",
+          "observed_at": "2026-10-22T20:47:34.826Z"
+        }
+      }
+    ],
+    "relationships": [
+      {
+        "id": "provided_public_record",
+        "left": "provided_evidence",
+        "right": "public_record",
+        "status": "not_applicable",
+        "fact_comparisons": []
+      },
+      {
+        "id": "public_record_hedera",
+        "left": "public_record",
+        "right": "hedera",
+        "status": "match",
+        "fact_comparisons": [
+          {
+            "key": "acceptance_anchor.hedera_network",
+            "left_key": "ledger.acceptance_anchor.hedera_network",
+            "right_key": "ledger.public_record:acceptance_anchor.hedera_network",
+            "status": "match",
+            "left": {
+              "key": "ledger.acceptance_anchor.hedera_network",
+              "state": "available",
+              "value": "mainnet"
+            },
+            "right": {
+              "key": "ledger.public_record:acceptance_anchor.hedera_network",
+              "state": "available",
+              "value": "mainnet"
+            },
+            "reason_code": null
+          },
+          {
+            "key": "acceptance_anchor.transaction_id",
+            "left_key": "ledger.acceptance_anchor.transaction_id",
+            "right_key": "ledger.public_record:acceptance_anchor.transaction_id",
+            "status": "match",
+            "left": {
+              "key": "ledger.acceptance_anchor.transaction_id",
+              "state": "available",
+              "value": "0.0.9316879@1792698397.976165566"
+            },
+            "right": {
+              "key": "ledger.public_record:acceptance_anchor.transaction_id",
+              "state": "available",
+              "value": "0.0.9316879@1792698397.976165566"
+            },
+            "reason_code": null
+          },
+          {
+            "key": "acceptance_anchor.transaction.exists",
+            "left_key": "ledger.acceptance_anchor.transaction.exists",
+            "right_key": "ledger.public_record:acceptance_anchor.transaction.exists",
+            "status": "match",
+            "left": {
+              "key": "ledger.acceptance_anchor.transaction.exists",
+              "state": "available",
+              "value": true
+            },
+            "right": {
+              "key": "ledger.public_record:acceptance_anchor.transaction.exists",
+              "state": "available",
+              "value": true
+            },
+            "reason_code": null
+          },
+          {
+            "key": "acceptance_anchor.message_id",
+            "left_key": "ledger.acceptance_anchor.message_id",
+            "right_key": "ledger.public_record:acceptance_anchor.message_id",
+            "status": "match",
+            "left": {
+              "key": "ledger.acceptance_anchor.message_id",
+              "state": "available",
+              "value": "36024@0.0.10740977"
+            },
+            "right": {
+              "key": "ledger.public_record:acceptance_anchor.message_id",
+              "state": "available",
+              "value": "36024@0.0.10740977"
+            },
+            "reason_code": null
+          },
+          {
+            "key": "acceptance_anchor.topic_id",
+            "left_key": "ledger.acceptance_anchor.topic_id",
+            "right_key": "ledger.public_record:acceptance_anchor.topic_id",
+            "status": "match",
+            "left": {
+              "key": "ledger.acceptance_anchor.topic_id",
+              "state": "available",
+              "value": "0.0.10740977"
+            },
+            "right": {
+              "key": "ledger.public_record:acceptance_anchor.topic_id",
+              "state": "available",
+              "value": "0.0.10740977"
+            },
+            "reason_code": null
+          },
+          {
+            "key": "acceptance_anchor.sequence_number",
+            "left_key": "ledger.acceptance_anchor.sequence_number",
+            "right_key": "ledger.public_record:acceptance_anchor.sequence_number",
+            "status": "match",
+            "left": {
+              "key": "ledger.acceptance_anchor.sequence_number",
+              "state": "available",
+              "value": 36024
+            },
+            "right": {
+              "key": "ledger.public_record:acceptance_anchor.sequence_number",
+              "state": "available",
+              "value": 36024
+            },
+            "reason_code": null
+          },
+          {
+            "key": "acceptance_anchor.message.exists",
+            "left_key": "ledger.acceptance_anchor.message.exists",
+            "right_key": "ledger.public_record:acceptance_anchor.message.exists",
+            "status": "match",
+            "left": {
+              "key": "ledger.acceptance_anchor.message.exists",
+              "state": "available",
+              "value": true
+            },
+            "right": {
+              "key": "ledger.public_record:acceptance_anchor.message.exists",
+              "state": "available",
+              "value": true
+            },
+            "reason_code": null
+          },
+          {
+            "key": "result_evidence_anchor.hedera_network",
+            "left_key": "ledger.result_evidence_anchor.hedera_network",
+            "right_key": "ledger.public_record:result_evidence_anchor.hedera_network",
+            "status": "match",
+            "left": {
+              "key": "ledger.result_evidence_anchor.hedera_network",
+              "state": "available",
+              "value": "mainnet"
+            },
+            "right": {
+              "key": "ledger.public_record:result_evidence_anchor.hedera_network",
+              "state": "available",
+              "value": "mainnet"
+            },
+            "reason_code": null
+          },
+          {
+            "key": "result_evidence_anchor.transaction_id",
+            "left_key": "ledger.result_evidence_anchor.transaction_id",
+            "right_key": "ledger.public_record:result_evidence_anchor.transaction_id",
+            "status": "match",
+            "left": {
+              "key": "ledger.result_evidence_anchor.transaction_id",
+              "state": "available",
+              "value": "0.0.9316879@1792698631.454266202"
+            },
+            "right": {
+              "key": "ledger.public_record:result_evidence_anchor.transaction_id",
+              "state": "available",
+              "value": "0.0.9316879@1792698631.454266202"
+            },
+            "reason_code": null
+          },
+          {
+            "key": "result_evidence_anchor.transaction.exists",
+            "left_key": "ledger.result_evidence_anchor.transaction.exists",
+            "right_key": "ledger.public_record:result_evidence_anchor.transaction.exists",
+            "status": "match",
+            "left": {
+              "key": "ledger.result_evidence_anchor.transaction.exists",
+              "state": "available",
+              "value": true
+            },
+            "right": {
+              "key": "ledger.public_record:result_evidence_anchor.transaction.exists",
+              "state": "available",
+              "value": true
+            },
+            "reason_code": null
+          }
+        ]
+      },
+      {
+        "id": "provided_hedera",
+        "left": "provided_evidence",
+        "right": "hedera",
+        "status": "not_applicable",
+        "fact_comparisons": []
+      }
+    ]
+  },
+  "snapshots": [
+    {
+      "schema_version": "vera.evidence-triangulation-authority.v1",
+      "authority": "provided_evidence",
+      "subject": {
+        "kind": "execution",
+        "id": "8f5c8410-0f62-5e2b-a251-1c3dfbc914c3",
+        "hedera_network": "mainnet"
+      },
+      "state": "not_applicable",
+      "reason_code": "PROVIDED_EVIDENCE_NOT_SUPPLIED",
+      "observation": null,
+      "facts": [],
+      "ledger_claims": []
+    },
+    {
+      "schema_version": "vera.evidence-triangulation-authority.v1",
+      "authority": "public_record",
+      "subject": {
+        "kind": "execution",
+        "id": "8f5c8410-0f62-5e2b-a251-1c3dfbc914c3",
+        "hedera_network": "mainnet"
+      },
+      "state": "resolved",
+      "reason_code": null,
+      "observation": {
+        "resolver_id": "explorer.public-execution-evidence.v1",
+        "source_type": "vera_anchor_public_view",
+        "observed_at": null
+      },
+      "facts": [
+        {
+          "key": "execution.job_id",
+          "state": "available",
+          "value": "8f5c8410-0f62-5e2b-a251-1c3dfbc914c3"
+        },
+        {
+          "key": "execution.result_id",
+          "state": "available",
+          "value": "81cbedb5-9b42-592a-aa6b-9ccf5620ac3d"
+        },
+        {
+          "key": "execution.hedera_network",
+          "state": "available",
+          "value": "mainnet"
+        },
+        {
+          "key": "execution.pipeline_hash",
+          "state": "available",
+          "value": "c48011b217828fc6562f825e991c30cb4697ba369ef73d7284c538119a08ebe65b77d1c7b97af877f7280b76fc05fa59cb19962400713e930390454bec766060"
+        },
+        {
+          "key": "dataset.fingerprint_sha3_512",
+          "state": "available",
+          "value": "099594a194653034bb7b36f815815ddc2ad6f8bbcd65ec73b70ec540e73f58a082af5dd602be1931386cefbd3092a28f8192613353db406fc2eb7fa357cf469c"
+        },
+        {
+          "key": "dataset.manifest_sha3_512",
+          "state": "available",
+          "value": "1e2b7c7a062bc3d6644c3c732018d7b19c69c7ef0ca17c80a75974c26022670a01dcdfc1dd605f2002ca060916f9ee5d42cd2544139ec7565688ae65c897d77b"
+        },
+        {
+          "key": "binding.digest",
+          "state": "available",
+          "value": "63061461cf42978245018f1552d6b203f9d9a625dae032323a732b9ccb223b11494761bdd2241364c02ad4890f6da8e7c539dc2afb81381eeb18b7cbba1c2a00"
+        },
+        {
+          "key": "acceptance.digest",
+          "state": "available",
+          "value": "39da725da124eb4a92b4b331a7caedfa7c9897ea33bf1ab953ff2e01e17fb80c30bc38e8778496a6b3174b82fe42261fe4706ced1b34c190efcda2f1054e8951"
+        },
+        {
+          "key": "result_evidence.digest",
+          "state": "available",
+          "value": "11a46bd31c1adbf56b30981ffbdc59393ef808969606a8d96f4d717ad72036450b7d6f5ad5c39e99907cf1611b1660f3cfb8fcab9f7a40abe4aa1986d70cf838"
+        },
+        {
+          "key": "result_evidence.result_hash",
+          "state": "available",
+          "value": "b83a998a53d7aa8fcb8fe04e35779201fd8959d76cdfabb25356a2959ac1fad18e8835682bff06a03d5eb3492a94743f1aa372a449a720a5fc330feb55ac6661"
+        },
+        {
+          "key": "result_evidence.service_hash",
+          "state": "available",
+          "value": "610283253507974db93a3e17555e8cdfd9cbfcf1e7c30536fc70fd3da225308e99f7d51162da7380f72d9f8efde82200bc22596202ddf752efc517e6b52eb03e"
+        },
+        {
+          "key": "result_evidence.global_hash",
+          "state": "available",
+          "value": "4971d24de8551ed34aacde1a8a06833545c549e91c199a92bd776f94518c148f164b7b0d2dbe9f5c9f0d4d3c8c614b0df8667d120243204e247c82874b9eaabf"
+        },
+        {
+          "key": "ledger.acceptance_anchor.transaction.exists",
+          "state": "available",
+          "value": true
+        },
+        {
+          "key": "ledger.acceptance_anchor.message.exists",
+          "state": "available",
+          "value": true
+        },
+        {
+          "key": "ledger.result_evidence_anchor.transaction.exists",
+          "state": "available",
+          "value": true
+        },
+        {
+          "key": "ledger.acceptance_anchor.hedera_network",
+          "state": "available",
+          "value": "mainnet"
+        },
+        {
+          "key": "ledger.acceptance_anchor.transaction_id",
+          "state": "available",
+          "value": "0.0.9316879@1792698397.976165566"
+        },
+        {
+          "key": "ledger.acceptance_anchor.message_id",
+          "state": "available",
+          "value": "36024@0.0.10740977"
+        },
+        {
+          "key": "ledger.acceptance_anchor.topic_id",
+          "state": "available",
+          "value": "0.0.10740977"
+        },
+        {
+          "key": "ledger.acceptance_anchor.sequence_number",
+          "state": "available",
+          "value": 36024
+        },
+        {
+          "key": "ledger.acceptance_anchor.data_hash",
+          "state": "available",
+          "value": "419685dc1a88c67395583d237ad86e35eb2ba8036ad28120ec4a5fa74359732d436b6f6602897f5f16a87a1077a39bc5ec0d7789efdb89f47cf08846261a2d1e"
+        },
+        {
+          "key": "ledger.result_evidence_anchor.hedera_network",
+          "state": "available",
+          "value": "mainnet"
+        },
+        {
+          "key": "ledger.result_evidence_anchor.transaction_id",
+          "state": "available",
+          "value": "0.0.9316879@1792698631.454266202"
+        }
+      ],
+      "ledger_claims": [
+        {
+          "claim_key": "acceptance_anchor",
+          "role": "acceptance_anchor",
+          "hedera_network": "mainnet",
+          "transaction_id": "0.0.9316879@1792698397.976165566",
+          "message_id": "36024@0.0.10740977",
+          "topic_id": "0.0.10740977",
+          "sequence_number": 36024,
+          "consensus_timestamp": null,
+          "data_hash": "419685dc1a88c67395583d237ad86e35eb2ba8036ad28120ec4a5fa74359732d436b6f6602897f5f16a87a1077a39bc5ec0d7789efdb89f47cf08846261a2d1e"
+        },
+        {
+          "claim_key": "result_evidence_anchor",
+          "role": "result_evidence_anchor",
+          "hedera_network": "mainnet",
+          "transaction_id": "0.0.9316879@1792698631.454266202",
+          "message_id": null,
+          "topic_id": null,
+          "sequence_number": null,
+          "consensus_timestamp": null,
+          "data_hash": null
+        }
+      ]
+    },
+    {
+      "schema_version": "vera.evidence-triangulation-authority.v1",
+      "authority": "hedera",
+      "subject": {
+        "kind": "execution",
+        "id": "8f5c8410-0f62-5e2b-a251-1c3dfbc914c3",
+        "hedera_network": "mainnet"
+      },
+      "state": "resolved",
+      "reason_code": null,
+      "observation": {
+        "resolver_id": "explorer.hedera-mirror-authority.v1",
+        "source_type": "hedera_mirror_rest",
+        "observed_at": "2026-10-22T20:47:34.826Z"
+      },
+      "facts": [
+        {
+          "key": "ledger.public_record:acceptance_anchor.message.exists",
+          "state": "available",
+          "value": true
+        },
+        {
+          "key": "ledger.public_record:acceptance_anchor.mirror_message_sha3_512",
+          "state": "available",
+          "value": "3ec9e74c84ff016963959078f6f0c0c1be3c312dbace7d77e6213a5477acd2fbc65e827e6395519aa982ef1f71ca4a5ee8f4cb3f6bd88a61a44d5cd171b569a2"
+        },
+        {
+          "key": "ledger.public_record:acceptance_anchor.data_hash",
+          "state": "unavailable",
+          "reason_code": "HEDERA_APPLICATION_DATA_HASH_NOT_DERIVABLE"
+        },
+        {
+          "key": "ledger.public_record:acceptance_anchor.transaction.exists",
+          "state": "available",
+          "value": true
+        },
+        {
+          "key": "ledger.public_record:acceptance_anchor.transaction_consensus_timestamp",
+          "state": "available",
+          "value": "1792698403.824611101"
+        },
+        {
+          "key": "ledger.public_record:acceptance_anchor.transaction_result",
+          "state": "available",
+          "value": "SUCCESS"
+        },
+        {
+          "key": "ledger.public_record:result_evidence_anchor.transaction.exists",
+          "state": "available",
+          "value": true
+        },
+        {
+          "key": "ledger.public_record:result_evidence_anchor.transaction_consensus_timestamp",
+          "state": "available",
+          "value": "1792698639.263346104"
+        },
+        {
+          "key": "ledger.public_record:result_evidence_anchor.transaction_result",
+          "state": "available",
+          "value": "SUCCESS"
+        },
+        {
+          "key": "ledger.public_record:acceptance_anchor.hedera_network",
+          "state": "available",
+          "value": "mainnet"
+        },
+        {
+          "key": "ledger.public_record:acceptance_anchor.transaction_id",
+          "state": "available",
+          "value": "0.0.9316879@1792698397.976165566"
+        },
+        {
+          "key": "ledger.public_record:acceptance_anchor.message_id",
+          "state": "available",
+          "value": "36024@0.0.10740977"
+        },
+        {
+          "key": "ledger.public_record:acceptance_anchor.topic_id",
+          "state": "available",
+          "value": "0.0.10740977"
+        },
+        {
+          "key": "ledger.public_record:acceptance_anchor.sequence_number",
+          "state": "available",
+          "value": 36024
+        },
+        {
+          "key": "ledger.public_record:acceptance_anchor.consensus_timestamp",
+          "state": "available",
+          "value": "1792698403.824611101"
+        },
+        {
+          "key": "ledger.public_record:result_evidence_anchor.hedera_network",
+          "state": "available",
+          "value": "mainnet"
+        },
+        {
+          "key": "ledger.public_record:result_evidence_anchor.transaction_id",
+          "state": "available",
+          "value": "0.0.9316879@1792698631.454266202"
+        },
+        {
+          "key": "ledger.public_record:result_evidence_anchor.consensus_timestamp",
+          "state": "available",
+          "value": "1792698639.263346104"
+        }
+      ],
+      "ledger_claims": [
+        {
+          "claim_key": "public_record:acceptance_anchor",
+          "role": "acceptance_anchor",
+          "hedera_network": "mainnet",
+          "transaction_id": "0.0.9316879@1792698397.976165566",
+          "message_id": "36024@0.0.10740977",
+          "topic_id": "0.0.10740977",
+          "sequence_number": 36024,
+          "consensus_timestamp": "1792698403.824611101",
+          "data_hash": null
+        },
+        {
+          "claim_key": "public_record:result_evidence_anchor",
+          "role": "result_evidence_anchor",
+          "hedera_network": "mainnet",
+          "transaction_id": "0.0.9316879@1792698631.454266202",
+          "message_id": null,
+          "topic_id": null,
+          "sequence_number": null,
+          "consensus_timestamp": "1792698639.263346104",
+          "data_hash": null
+        }
+      ]
+    }
+  ],
+  "execution_verification": {
+    "schema_version": "vera.execution-verification.v1",
+    "verifier_version": "1.0.0",
+    "subject": {
+      "hedera_network": "mainnet",
+      "program": "sage",
+      "job_id": "8f5c8410-0f62-5e2b-a251-1c3dfbc914c3",
+      "result_id": "81cbedb5-9b42-592a-aa6b-9ccf5620ac3d"
+    },
+    "status": "consistent",
+    "summary": {
+      "total": 31,
+      "outcome_relevant": 28,
+      "passed": 31,
+      "failed": 0,
+      "unavailable": 0,
+      "not_applicable": 0
+    },
+    "checks": [
+      {
+        "id": "input.bounds",
+        "group": "contract",
+        "label": "Verification input is safely bounded and structurally supported",
+        "requirement": "required",
+        "status": "pass",
+        "reason_code": "CHECK_PASSED",
+        "evidence_refs": []
+      },
+      {
+        "id": "public_evidence.available",
+        "group": "contract",
+        "label": "Standards-backed evidence is available",
+        "requirement": "required",
+        "status": "pass",
+        "reason_code": "CHECK_PASSED",
+        "evidence_refs": [
+          "public_standards_evidence"
+        ]
+      },
+      {
+        "id": "public_evidence.contract_version",
+        "group": "contract",
+        "label": "Public evidence contract version is supported",
+        "requirement": "required",
+        "status": "pass",
+        "reason_code": "CHECK_PASSED",
+        "evidence_refs": [
+          "public_standards_evidence"
+        ]
+      },
+      {
+        "id": "execution.identity",
+        "group": "execution",
+        "label": "Execution identity is structurally valid",
+        "requirement": "required",
+        "status": "pass",
+        "reason_code": "CHECK_PASSED",
+        "evidence_refs": [
+          "execution"
+        ]
+      },
+      {
+        "id": "execution.network_scope",
+        "group": "execution",
+        "label": "Execution network matches the requested verification scope",
+        "requirement": "required",
+        "status": "pass",
+        "reason_code": "CHECK_PASSED",
+        "evidence_refs": [
+          "execution"
+        ]
+      },
+      {
+        "id": "execution.dataset_commitment",
+        "group": "execution",
+        "label": "Execution dataset commitment is structurally valid",
+        "requirement": "conditional",
+        "status": "pass",
+        "reason_code": "CHECK_PASSED",
+        "evidence_refs": [
+          "execution.dataset"
+        ]
+      },
+      {
+        "id": "standards.baseline_reference",
+        "group": "standards",
+        "label": "Frozen standards baseline is complete",
+        "requirement": "required",
+        "status": "pass",
+        "reason_code": "CHECK_PASSED",
+        "evidence_refs": [
+          "standards.baseline"
+        ]
+      },
+      {
+        "id": "standards.requester_reference",
+        "group": "standards",
+        "label": "Requester identity references are complete",
+        "requirement": "required",
+        "status": "pass",
+        "reason_code": "CHECK_PASSED",
+        "evidence_refs": [
+          "agents.requester"
+        ]
+      },
+      {
+        "id": "standards.executor_reference",
+        "group": "standards",
+        "label": "Executor identity references are complete",
+        "requirement": "required",
+        "status": "pass",
+        "reason_code": "CHECK_PASSED",
+        "evidence_refs": [
+          "agents.executor"
+        ]
+      },
+      {
+        "id": "standards.capability_reference",
+        "group": "standards",
+        "label": "HCS-26 capability reference is complete",
+        "requirement": "required",
+        "status": "pass",
+        "reason_code": "CHECK_PASSED",
+        "evidence_refs": [
+          "capability"
+        ]
+      },
+      {
+        "id": "standards.schema_references",
+        "group": "standards",
+        "label": "HCS-13 schema references are complete",
+        "requirement": "required",
+        "status": "pass",
+        "reason_code": "CHECK_PASSED",
+        "evidence_refs": [
+          "standards.schemas"
+        ]
+      },
+      {
+        "id": "standards.reference_summary",
+        "group": "standards",
+        "label": "Reference completeness summary matches public evidence",
+        "requirement": "required",
+        "status": "pass",
+        "reason_code": "CHECK_PASSED",
+        "evidence_refs": [
+          "standards"
+        ]
+      },
+      {
+        "id": "standards.references_resolved",
+        "group": "standards",
+        "label": "Standards references independently resolve",
+        "requirement": "optional",
+        "status": "pass",
+        "reason_code": "CHECK_PASSED",
+        "evidence_refs": [
+          "agents.executor",
+          "agents.requester",
+          "capability",
+          "standards.baseline",
+          "standards.schemas"
+        ]
+      },
+      {
+        "id": "binding.contract_metadata",
+        "group": "binding",
+        "label": "Execution binding contract metadata is valid",
+        "requirement": "required",
+        "status": "pass",
+        "reason_code": "CHECK_PASSED",
+        "evidence_refs": [
+          "binding"
+        ]
+      },
+      {
+        "id": "binding.digest_recomputed",
+        "group": "binding",
+        "label": "Execution binding digest is recomputed from canonical content",
+        "requirement": "conditional",
+        "status": "pass",
+        "reason_code": "CHECK_PASSED",
+        "evidence_refs": [
+          "binding.digest",
+          "binding.digest_payload"
+        ]
+      },
+      {
+        "id": "acceptance.contract_metadata",
+        "group": "acceptance",
+        "label": "Execution acceptance contract metadata is valid",
+        "requirement": "required",
+        "status": "pass",
+        "reason_code": "CHECK_PASSED",
+        "evidence_refs": [
+          "acceptance"
+        ]
+      },
+      {
+        "id": "acceptance.digest_recomputed",
+        "group": "acceptance",
+        "label": "Execution acceptance digest is recomputed from canonical content",
+        "requirement": "required",
+        "status": "pass",
+        "reason_code": "CHECK_PASSED",
+        "evidence_refs": [
+          "acceptance",
+          "binding",
+          "execution"
+        ]
+      },
+      {
+        "id": "acceptance.binding_link",
+        "group": "acceptance",
+        "label": "Acceptance references the finalized execution binding",
+        "requirement": "required",
+        "status": "pass",
+        "reason_code": "CHECK_PASSED",
+        "evidence_refs": [
+          "acceptance",
+          "binding"
+        ]
+      },
+      {
+        "id": "acceptance.state_confirmed",
+        "group": "acceptance",
+        "label": "Pre-execution acceptance is confirmed",
+        "requirement": "required",
+        "status": "pass",
+        "reason_code": "CHECK_PASSED",
+        "evidence_refs": [
+          "acceptance"
+        ]
+      },
+      {
+        "id": "acceptance.hcs_confirmation",
+        "group": "acceptance",
+        "label": "Required acceptance HCS confirmation is present",
+        "requirement": "conditional",
+        "status": "pass",
+        "reason_code": "CHECK_PASSED",
+        "evidence_refs": [
+          "acceptance.hcs"
+        ]
+      },
+      {
+        "id": "acceptance.precedes_execution",
+        "group": "acceptance",
+        "label": "Acceptance precedes authoritative execution time",
+        "requirement": "optional",
+        "status": "pass",
+        "reason_code": "CHECK_PASSED",
+        "evidence_refs": [
+          "acceptance",
+          "acceptance.hcs",
+          "verification_material.execution_start"
+        ]
+      },
+      {
+        "id": "software.pipeline_link",
+        "group": "software",
+        "label": "Bound software release matches the execution pipeline",
+        "requirement": "required",
+        "status": "pass",
+        "reason_code": "CHECK_PASSED",
+        "evidence_refs": [
+          "execution",
+          "software_release"
+        ]
+      },
+      {
+        "id": "parameters.commitment_matches",
+        "group": "execution",
+        "label": "Parameter instance commitment matches execution parameters",
+        "requirement": "optional",
+        "status": "pass",
+        "reason_code": "CHECK_PASSED",
+        "evidence_refs": [
+          "standards.schemas",
+          "verification_material.parameter_instance"
+        ]
+      },
+      {
+        "id": "result_evidence.scope",
+        "group": "result",
+        "label": "Result evidence identifies the requested result",
+        "requirement": "conditional",
+        "status": "pass",
+        "reason_code": "CHECK_PASSED",
+        "evidence_refs": [
+          "execution",
+          "result_evidence"
+        ]
+      },
+      {
+        "id": "result_evidence.contract_metadata",
+        "group": "result",
+        "label": "Result evidence contract metadata is valid",
+        "requirement": "conditional",
+        "status": "pass",
+        "reason_code": "CHECK_PASSED",
+        "evidence_refs": [
+          "result_evidence"
+        ]
+      },
+      {
+        "id": "result_evidence.sealed",
+        "group": "result",
+        "label": "Result evidence is sealed",
+        "requirement": "conditional",
+        "status": "pass",
+        "reason_code": "CHECK_PASSED",
+        "evidence_refs": [
+          "result_evidence"
+        ]
+      },
+      {
+        "id": "result_evidence.binding_link",
+        "group": "result",
+        "label": "Result evidence references the finalized execution binding",
+        "requirement": "conditional",
+        "status": "pass",
+        "reason_code": "CHECK_PASSED",
+        "evidence_refs": [
+          "binding",
+          "result_evidence"
+        ]
+      },
+      {
+        "id": "result_evidence.acceptance_link",
+        "group": "result",
+        "label": "Result evidence references the confirmed acceptance",
+        "requirement": "conditional",
+        "status": "pass",
+        "reason_code": "CHECK_PASSED",
+        "evidence_refs": [
+          "acceptance",
+          "result_evidence"
+        ]
+      },
+      {
+        "id": "result_evidence.pipeline_link",
+        "group": "result",
+        "label": "Result evidence references the executed software pipeline",
+        "requirement": "conditional",
+        "status": "pass",
+        "reason_code": "CHECK_PASSED",
+        "evidence_refs": [
+          "execution",
+          "result_evidence"
+        ]
+      },
+      {
+        "id": "result_evidence.hcs_receipt",
+        "group": "result",
+        "label": "Result evidence includes an HCS receipt reference",
+        "requirement": "conditional",
+        "status": "pass",
+        "reason_code": "CHECK_PASSED",
+        "evidence_refs": [
+          "result_evidence.hcs"
+        ]
+      },
+      {
+        "id": "result_evidence.digest_recomputed",
+        "group": "result",
+        "label": "Result evidence digest is recomputed from canonical content",
+        "requirement": "conditional",
+        "status": "pass",
+        "reason_code": "CHECK_PASSED",
+        "evidence_refs": [
+          "result_evidence.digest",
+          "result_evidence.digest_payload"
+        ]
+      }
+    ]
+  },
+  "execution_merkle_verification": {
+    "schema_version": "vera.execution-merkle-verification.v1",
+    "status": "consistent",
+    "reason_code": null,
+    "subject": {
+      "program": "sage",
+      "job_id": "8f5c8410-0f62-5e2b-a251-1c3dfbc914c3",
+      "result_id": "81cbedb5-9b42-592a-aa6b-9ccf5620ac3d",
+      "hedera_network": "mainnet",
+      "proof_date": "2026-10-22"
+    },
+    "root_id": "c6056fde-f5bc-46f0-ac77-8a07019c2979",
+    "root_hash": "8dcdae8e54b18ae7d9e6c23534121010e1a0cd955619030ec195070155c30971de2c6e86371f76cba67303e339076bd7d670c7a76ee01517426d13769404eae4",
+    "candidate_root_ids": [
+      "c6056fde-f5bc-46f0-ac77-8a07019c2979"
+    ],
+    "job_leaf": {
+      "entity_id": "8f5c8410-0f62-5e2b-a251-1c3dfbc914c3",
+      "leaf_hash": "b352f656c3d57293a60124d41faecea143dcc21c86fffd180cfcc481b59549e67dbc529da884913131b37edee309e28af87d1c1bbf405142893a481a437e507c",
+      "leaf_index": 0,
+      "root_id": "c6056fde-f5bc-46f0-ac77-8a07019c2979",
+      "root_hash": "8dcdae8e54b18ae7d9e6c23534121010e1a0cd955619030ec195070155c30971de2c6e86371f76cba67303e339076bd7d670c7a76ee01517426d13769404eae4"
+    },
+    "result_leaf": {
+      "entity_id": "81cbedb5-9b42-592a-aa6b-9ccf5620ac3d",
+      "leaf_hash": "7a0cb26609f7f42d39a3fa5acf0614503e333eabf5f883a8f59dfaf33c10f041d353fa24c6c7776aceb0a636e5134d50bc38506e12c76a70b6e200dc62fe51aa",
+      "leaf_index": 1,
+      "root_id": "c6056fde-f5bc-46f0-ac77-8a07019c2979",
+      "root_hash": "8dcdae8e54b18ae7d9e6c23534121010e1a0cd955619030ec195070155c30971de2c6e86371f76cba67303e339076bd7d670c7a76ee01517426d13769404eae4"
+    },
+    "parent_root_diagnostic": {
+      "status": "consistent",
+      "relationship_status": "match",
+      "hedera_state": "resolved",
+      "hedera_reason_code": null,
+      "checks": [],
+      "unavailable_facts": [
+        {
+          "key": "ledger.public_record:root_origin_anchor.data_hash",
+          "reason_code": "HEDERA_APPLICATION_DATA_HASH_NOT_DERIVABLE"
+        },
+        {
+          "key": "ledger.public_record:publication_anchor.data_hash",
+          "reason_code": "HEDERA_APPLICATION_DATA_HASH_NOT_DERIVABLE"
+        }
+      ]
+    }
+  }
+}

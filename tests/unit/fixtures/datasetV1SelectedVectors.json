@@ -1,0 +1,417 @@
+{
+  "source": "Selected expected values from Dataset v1 conformance examples (not the original distribution file)",
+  "cases": [
+    {
+      "case_id": "basic-v1",
+      "bundle": {
+        "bundle_version": "v1",
+        "hash_contract": {
+          "contract_id": "hf-contract-v1",
+          "frame": "hf:frame:v1",
+          "canonical_json": "hf:canonical-json:v1",
+          "algorithm": "sha3-512",
+          "encoding": "hex_lower"
+        },
+        "dataset_identity": {
+          "dataset_key": "conformance.dataset.basic.v1",
+          "version_label": "v1",
+          "program": "conformance"
+        },
+        "rules": {
+          "path_normalization": "posix_rel_no_dotdot",
+          "follow_symlinks": false,
+          "redact_paths": false,
+          "ordering": "path_rel_ascii_asc",
+          "merkle_rule": "dup_last_on_odd"
+        },
+        "files": [
+          {
+            "path_rel": "hello.txt",
+            "bytes": 12,
+            "sha3_512": "4a936cbc1db296bd08d1c0bbf5a66a1897f35ee6d93047e0edff893dfbcba02f1e1570e85d1187ea26bea6d54199e0656f1b7c21b9cc2102b8ed2a12769f4531",
+            "leaf_hash": "8fccfd1270991327edf23c5f224c66ec1b08c9c3f3a8783aeafb986c8d3352dccb03ff78645af3334098bfe924d54df2a684f06d711b93d3785df52c6de88a92"
+          }
+        ],
+        "merkle": {
+          "leaf_count": 1,
+          "root": "8fccfd1270991327edf23c5f224c66ec1b08c9c3f3a8783aeafb986c8d3352dccb03ff78645af3334098bfe924d54df2a684f06d711b93d3785df52c6de88a92"
+        },
+        "summary": {
+          "file_count": 1,
+          "total_bytes": 12
+        }
+      },
+      "bundle_expectations": {
+        "dataset_key": "conformance.dataset.basic.v1",
+        "dataset_fingerprint": "98eef5d06e916c1a14a4f28ee1fcf91fb5f596d5586e829119a57520fe122a7096dae0d78c381b261c29bb3c36e2bf183e08c89d1a4e2e9a80331f3f717bcd8e",
+        "bundle_digest": "d83d1226f6e99e795d84e911d3dc14597a74513560abdd4f82a0193396e00d90beab88fd6344a8be3938005fe81ad9139677774aaea3aeeb07f6e6dabbf8b887",
+        "merkle_root": "8fccfd1270991327edf23c5f224c66ec1b08c9c3f3a8783aeafb986c8d3352dccb03ff78645af3334098bfe924d54df2a684f06d711b93d3785df52c6de88a92",
+        "idempotency_key": "3627db3c144723fe4712e3a009b2c3affd72848d58840e3801173c2c5bb6b66fc8f8a4c31c471df9d4574ad74c5183df73c097d317390431b3a48fbc02a869cb"
+      },
+      "hash_only_receipt": {
+        "v": "v1",
+        "kind": "dataset_anchor_receipt",
+        "mode": "hash_only",
+        "dataset_identity": {
+          "dataset_key": "conformance.dataset.basic.v1",
+          "version_label": "v1",
+          "program": "conformance"
+        },
+        "rules": {
+          "path_normalization": "posix_rel_no_dotdot",
+          "follow_symlinks": false,
+          "redact_paths": false,
+          "ordering": "path_rel_ascii_asc",
+          "merkle_rule": "dup_last_on_odd"
+        },
+        "evidence": {
+          "dataset_fingerprint": "98eef5d06e916c1a14a4f28ee1fcf91fb5f596d5586e829119a57520fe122a7096dae0d78c381b261c29bb3c36e2bf183e08c89d1a4e2e9a80331f3f717bcd8e",
+          "bundle_digest": "d83d1226f6e99e795d84e911d3dc14597a74513560abdd4f82a0193396e00d90beab88fd6344a8be3938005fe81ad9139677774aaea3aeeb07f6e6dabbf8b887",
+          "merkle_root": "8fccfd1270991327edf23c5f224c66ec1b08c9c3f3a8783aeafb986c8d3352dccb03ff78645af3334098bfe924d54df2a684f06d711b93d3785df52c6de88a92",
+          "idempotency_key": "3627db3c144723fe4712e3a009b2c3affd72848d58840e3801173c2c5bb6b66fc8f8a4c31c471df9d4574ad74c5183df73c097d317390431b3a48fbc02a869cb",
+          "file_count": 1,
+          "total_bytes": 12
+        },
+        "pointers": {
+          "evidence_pointer": "vera://dataset-conformance/basic-v1"
+        },
+        "receipt_id": "375dff24763d97515a8d6eef7e5279d89378398c658ed19c69d0d18b534d92b2e692a211da762b417843b0fc781ecdcd2688f9895968e4425a5f3c7411be7d48"
+      },
+      "anchored_receipts": [
+        {
+          "v": "v1",
+          "kind": "dataset_anchor_receipt",
+          "mode": "register_and_anchor",
+          "hedera_network": "testnet",
+          "dataset_identity": {
+            "dataset_key": "conformance.dataset.basic.v1",
+            "version_label": "v1",
+            "program": "conformance"
+          },
+          "rules": {
+            "path_normalization": "posix_rel_no_dotdot",
+            "follow_symlinks": false,
+            "redact_paths": false,
+            "ordering": "path_rel_ascii_asc",
+            "merkle_rule": "dup_last_on_odd"
+          },
+          "evidence": {
+            "dataset_fingerprint": "98eef5d06e916c1a14a4f28ee1fcf91fb5f596d5586e829119a57520fe122a7096dae0d78c381b261c29bb3c36e2bf183e08c89d1a4e2e9a80331f3f717bcd8e",
+            "bundle_digest": "d83d1226f6e99e795d84e911d3dc14597a74513560abdd4f82a0193396e00d90beab88fd6344a8be3938005fe81ad9139677774aaea3aeeb07f6e6dabbf8b887",
+            "merkle_root": "8fccfd1270991327edf23c5f224c66ec1b08c9c3f3a8783aeafb986c8d3352dccb03ff78645af3334098bfe924d54df2a684f06d711b93d3785df52c6de88a92",
+            "idempotency_key": "3627db3c144723fe4712e3a009b2c3affd72848d58840e3801173c2c5bb6b66fc8f8a4c31c471df9d4574ad74c5183df73c097d317390431b3a48fbc02a869cb",
+            "file_count": 1,
+            "total_bytes": 12
+          },
+          "pointers": {
+            "evidence_pointer": "vera://dataset-conformance/basic-v1"
+          },
+          "receipt_id": "f1324142b1294a381730e2e0fcae1ed6fe94ff305f3f891c29552f82402f733307f29ec42cd964816bf9201079057b246eab6334975a58d01eddcd08f3c5db9e"
+        },
+        {
+          "v": "v1",
+          "kind": "dataset_anchor_receipt",
+          "mode": "register_and_anchor",
+          "hedera_network": "mainnet",
+          "dataset_identity": {
+            "dataset_key": "conformance.dataset.basic.v1",
+            "version_label": "v1",
+            "program": "conformance"
+          },
+          "rules": {
+            "path_normalization": "posix_rel_no_dotdot",
+            "follow_symlinks": false,
+            "redact_paths": false,
+            "ordering": "path_rel_ascii_asc",
+            "merkle_rule": "dup_last_on_odd"
+          },
+          "evidence": {
+            "dataset_fingerprint": "98eef5d06e916c1a14a4f28ee1fcf91fb5f596d5586e829119a57520fe122a7096dae0d78c381b261c29bb3c36e2bf183e08c89d1a4e2e9a80331f3f717bcd8e",
+            "bundle_digest": "d83d1226f6e99e795d84e911d3dc14597a74513560abdd4f82a0193396e00d90beab88fd6344a8be3938005fe81ad9139677774aaea3aeeb07f6e6dabbf8b887",
+            "merkle_root": "8fccfd1270991327edf23c5f224c66ec1b08c9c3f3a8783aeafb986c8d3352dccb03ff78645af3334098bfe924d54df2a684f06d711b93d3785df52c6de88a92",
+            "idempotency_key": "3627db3c144723fe4712e3a009b2c3affd72848d58840e3801173c2c5bb6b66fc8f8a4c31c471df9d4574ad74c5183df73c097d317390431b3a48fbc02a869cb",
+            "file_count": 1,
+            "total_bytes": 12
+          },
+          "pointers": {
+            "evidence_pointer": "vera://dataset-conformance/basic-v1"
+          },
+          "receipt_id": "56392a820c9e6dbdef02b76edb62dddd861f00786b215d0eed57137c7c0b5f124fc8f61f4ab1528075485efa0a30c5d896693ae8cc627487bfa4d8dc13033a66"
+        }
+      ]
+    },
+    {
+      "case_id": "realistic-multifile-v1",
+      "bundle": {
+        "bundle_version": "v1",
+        "hash_contract": {
+          "contract_id": "hf-contract-v1",
+          "frame": "hf:frame:v1",
+          "canonical_json": "hf:canonical-json:v1",
+          "algorithm": "sha3-512",
+          "encoding": "hex_lower"
+        },
+        "dataset_identity": {
+          "dataset_key": "conformance.dataset.realistic.v1",
+          "version_label": "2026.09",
+          "program": "conformance"
+        },
+        "rules": {
+          "path_normalization": "posix_rel_no_dotdot",
+          "follow_symlinks": false,
+          "redact_paths": false,
+          "ordering": "path_rel_ascii_asc",
+          "merkle_rule": "dup_last_on_odd"
+        },
+        "files": [
+          {
+            "path_rel": "README.md",
+            "bytes": 73,
+            "sha3_512": "8827b613584c4a726c1c0b0a1872225184485368e7da9b2664093d642c72514e0a1f59df9d324a147e65ef87ae29534764b3e80ef8750c09a1bffe1585768f15",
+            "leaf_hash": "2fe376b079027cc567758a46cd73488ab0166d3ecefbc5ac710e05df1cacc07acc3247164b839aa3512dbe5035dbd5a30dcd78d674d36f120d0a82eb0b5d04d9"
+          },
+          {
+            "path_rel": "data/observations.csv",
+            "bytes": 53,
+            "sha3_512": "dc2ab70fd8f03cdb2daaac1dc15d652d17ab92cb8dcf38db1a0c9a3c17f1f3662a5e6b7014f85dd7f8614558e35b9ab2a9795ffcaa12f825fc616f1a53030006",
+            "leaf_hash": "1f103b8c41be740280a5b3a89808a03c0a4fc658b4c42d14b227830b837be1893777bae4098a3c04515c36a41c15adc3e6ef1c44940779f17f5cceb447a985f0"
+          },
+          {
+            "path_rel": "metadata/labels.json",
+            "bytes": 40,
+            "sha3_512": "7cc59642d2a3187f460f54a435b0ffef35ee90980cc3f38e64020419275a67353a84e7808edcb6ca7a89941e2ffccbd961bcd0a7ab72e003130fd2917df1887e",
+            "leaf_hash": "ce92cc689296862e6723c3d64437b1b8f251b7d2f87701c9702d6eb25c25f387396b6d29cb4ea6edab108129798fa2a25cc3fcfc9442cfd5946e2534de79412e"
+          },
+          {
+            "path_rel": "nested/config/settings.json",
+            "bytes": 34,
+            "sha3_512": "801478d6a233055b36fa025a748e070a50d2e49fba7633cc62a445c9b53a025a71dd2a9f15d1bb599bc78d0baaf13a36f166dd21779ad84029ff9f18212e46c9",
+            "leaf_hash": "904f523e3dd1beb1d2c52e7c87369cc2fb85faaae8dbf5e6d804905b4ac48b577789df04a272bf5a1d549a1e5d72875ff14823735b3cb8a7594bf6aba72b84b0"
+          }
+        ],
+        "merkle": {
+          "leaf_count": 4,
+          "root": "3a2324271b96e21b474a4984d5111e874410613b5016400ebe9b5f0414bf8ecab18c037e09e4537b39a3efea915df56b30aa3becd6c841bea6df50bd5ab49a8e"
+        },
+        "summary": {
+          "file_count": 4,
+          "total_bytes": 200
+        }
+      },
+      "bundle_expectations": {
+        "dataset_key": "conformance.dataset.realistic.v1",
+        "dataset_fingerprint": "cf8cc94d629f0ff84ff73019cec855b356d7e3e680c1df6ab1bae94c8357627267988dc838c5a11495d631a2789fb922ec1ffd2266ec8d9ffff14537577c3d88",
+        "bundle_digest": "62a37122553a7048d40a34aaa869bd302c1d56aa29533d6f70c50bcf96fd35bdbd8079e1a747734d4415b84fb219e69719da163e1cc030a3e66ce5c136566ab9",
+        "merkle_root": "3a2324271b96e21b474a4984d5111e874410613b5016400ebe9b5f0414bf8ecab18c037e09e4537b39a3efea915df56b30aa3becd6c841bea6df50bd5ab49a8e",
+        "idempotency_key": "f59fbfe33ddcad5d05a4be01fc8cbb7173cc1119d584de0b54097ed8af44fffaf8d2e599b3b2dd55e3450377fe6c386738e0ff9fe22889c7e5a3e1584eaec005"
+      },
+      "hash_only_receipt": {
+        "v": "v1",
+        "kind": "dataset_anchor_receipt",
+        "mode": "hash_only",
+        "dataset_identity": {
+          "dataset_key": "conformance.dataset.realistic.v1",
+          "version_label": "2026.09",
+          "program": "conformance"
+        },
+        "rules": {
+          "path_normalization": "posix_rel_no_dotdot",
+          "follow_symlinks": false,
+          "redact_paths": false,
+          "ordering": "path_rel_ascii_asc",
+          "merkle_rule": "dup_last_on_odd"
+        },
+        "evidence": {
+          "dataset_fingerprint": "cf8cc94d629f0ff84ff73019cec855b356d7e3e680c1df6ab1bae94c8357627267988dc838c5a11495d631a2789fb922ec1ffd2266ec8d9ffff14537577c3d88",
+          "bundle_digest": "62a37122553a7048d40a34aaa869bd302c1d56aa29533d6f70c50bcf96fd35bdbd8079e1a747734d4415b84fb219e69719da163e1cc030a3e66ce5c136566ab9",
+          "merkle_root": "3a2324271b96e21b474a4984d5111e874410613b5016400ebe9b5f0414bf8ecab18c037e09e4537b39a3efea915df56b30aa3becd6c841bea6df50bd5ab49a8e",
+          "idempotency_key": "f59fbfe33ddcad5d05a4be01fc8cbb7173cc1119d584de0b54097ed8af44fffaf8d2e599b3b2dd55e3450377fe6c386738e0ff9fe22889c7e5a3e1584eaec005",
+          "file_count": 4,
+          "total_bytes": 200
+        },
+        "pointers": {
+          "evidence_pointer": "vera://dataset-conformance/realistic-multifile-v1"
+        },
+        "receipt_id": "5d938e3ca286ac7babe322d6dd9f3b501c40759f7c44819c4e4b58249047567cc8e8d35d9a1a579827643f5ca96c1b2653e81542dfb09221a649b4cf16c9440b"
+      }
+    },
+    {
+      "case_id": "redacted-paths-v1",
+      "bundle": {
+        "bundle_version": "v1",
+        "hash_contract": {
+          "contract_id": "hf-contract-v1",
+          "frame": "hf:frame:v1",
+          "canonical_json": "hf:canonical-json:v1",
+          "algorithm": "sha3-512",
+          "encoding": "hex_lower"
+        },
+        "dataset_identity": {
+          "dataset_key": "conformance.dataset.redacted.v1",
+          "version_label": "v1",
+          "program": "conformance"
+        },
+        "rules": {
+          "path_normalization": "posix_rel_no_dotdot",
+          "follow_symlinks": false,
+          "redact_paths": true,
+          "ordering": "path_rel_ascii_asc",
+          "merkle_rule": "dup_last_on_odd"
+        },
+        "files": [
+          {
+            "path_hash": "1397f8037df0318467bc9373e679272cb382351965959fadd19028916124fd2c7a35ec64c71bdec8cd9167984e8f63bc47498416b38b4b9dab5e3944c74da838",
+            "bytes": 6,
+            "sha3_512": "084fa218069a3fea400f505cdcd0e561517489bf79da30ecbd4c162c76b094cf0714619521b5fdc22ff3cfdfc9bb6d6aaec6c3ac17e09eceee90e85f59434c67",
+            "leaf_hash": "3a2f92c0b259a48f6837df1b0164ebb7a21f9b7ed01a4beda7e129dde9bee02b89fed5f4de845fd2191bf5900571bdaaaaccaa141345f0419e8437ca9caa94f9"
+          },
+          {
+            "path_hash": "09b176f59a00b4eb96b54170df971156dbbf54e8a663167081b7548ac86d531a135a98ccfe278b87b6b95f86e704976ec8534aa1d503554558160cd7a1d779ff",
+            "bytes": 8,
+            "sha3_512": "95b9685cbcc515fd935b4926043cd9469b5afa3cdb09733d1e042c30f1226f600cb6f038fceec530452c93026eaac31390e2578cda6cb019990788f14bf73df5",
+            "leaf_hash": "0b97625f0eb51c2c36f2cdf1e4cfb7abd7e4ec1d57b0c01b144d2aeb457c240c7161f9e06477b6ae5c6810d7b8417c2d0f039d23fb6f1e6090c058044853a1fd"
+          },
+          {
+            "path_hash": "fe818b4dfff8b3b9fcbffb1a220ef79a941864af4185d717668d30ba7f04cedfbbb928be934a363982813fc24f4506e79bee7faeb63cf911567f6a7dd4d4bfd9",
+            "bytes": 12,
+            "sha3_512": "c1690019b00578f19aa0a9dd8943cdb41627a4e70c8426bb105acba5639ea8be8ff54421026a70af3206b03adb85ab0120608d5f5487773c1a1703eb0b2c0849",
+            "leaf_hash": "a0d7c0124b98d3dd2e3ad39bb9622cf2912c60e1071b56ac510e34afdd6645d9e70db61f2e57265ef16fbe2acd03e5b322d7370fec0008391699792be94d7f0e"
+          },
+          {
+            "path_hash": "87adb2b716b4ad75193851ad76687676beaad537da77b38d5fbaaea9a7e767c2d3e7ebb56e2b1bffe9a42255da68e9e7004423d6d9615a69611765676b884170",
+            "bytes": 5,
+            "sha3_512": "e204829c7b09fb8e3fa108cb7a1fe5f60ba737c8271e4caa426d52daed04cfed818ea369ec98999e017a079c00136c10bdd5bc839fe46becfa3888c08fcb173d",
+            "leaf_hash": "1c35aa3ca0db71edfa6b83dd0a01f56748f632dd7e50a8d17908ec21f8d5b9e3137ca4017b754da53249bfd0ed4d7c25afa6a399004fe602be442bdbce8b9973"
+          }
+        ],
+        "merkle": {
+          "leaf_count": 4,
+          "root": "03c03f6b1b04d4630162254b1e56c7ad595457aeb1ac82cba41592653f37af456907e809db77df9309f6a63c31f5c3869187c09790ceaa58c8858e5e9458fd43"
+        },
+        "summary": {
+          "file_count": 4,
+          "total_bytes": 31
+        }
+      },
+      "bundle_expectations": {
+        "dataset_key": "conformance.dataset.redacted.v1",
+        "dataset_fingerprint": "2c061b28b4929592baa3931480168a52975c0285aa975ad7653c3cadaf1dc326d4c733844f636e4ebddff6e8be47020403a39acfa1e2c95334eb80fa3e125d44",
+        "bundle_digest": "a89220acc7bac9a39e840c24ffe7844962359165263e43b2346d505078fd2db8d4c677c4da1fa512283b985ae1092989e83e85d2ea77030fd5a06d018cb53380",
+        "merkle_root": "03c03f6b1b04d4630162254b1e56c7ad595457aeb1ac82cba41592653f37af456907e809db77df9309f6a63c31f5c3869187c09790ceaa58c8858e5e9458fd43",
+        "idempotency_key": "1c2ca69a435b7f11fd71e1ea183a3476e244ee1442e78a7ed9d8f7272dc579835e23cef08366b0764dfc6d6368081fb08c3db1652c0d5047ef27a18d52fa7f3b"
+      },
+      "hash_only_receipt": {
+        "v": "v1",
+        "kind": "dataset_anchor_receipt",
+        "mode": "hash_only",
+        "dataset_identity": {
+          "dataset_key": "conformance.dataset.redacted.v1",
+          "version_label": "v1",
+          "program": "conformance"
+        },
+        "rules": {
+          "path_normalization": "posix_rel_no_dotdot",
+          "follow_symlinks": false,
+          "redact_paths": true,
+          "ordering": "path_rel_ascii_asc",
+          "merkle_rule": "dup_last_on_odd"
+        },
+        "evidence": {
+          "dataset_fingerprint": "2c061b28b4929592baa3931480168a52975c0285aa975ad7653c3cadaf1dc326d4c733844f636e4ebddff6e8be47020403a39acfa1e2c95334eb80fa3e125d44",
+          "bundle_digest": "a89220acc7bac9a39e840c24ffe7844962359165263e43b2346d505078fd2db8d4c677c4da1fa512283b985ae1092989e83e85d2ea77030fd5a06d018cb53380",
+          "merkle_root": "03c03f6b1b04d4630162254b1e56c7ad595457aeb1ac82cba41592653f37af456907e809db77df9309f6a63c31f5c3869187c09790ceaa58c8858e5e9458fd43",
+          "idempotency_key": "1c2ca69a435b7f11fd71e1ea183a3476e244ee1442e78a7ed9d8f7272dc579835e23cef08366b0764dfc6d6368081fb08c3db1652c0d5047ef27a18d52fa7f3b",
+          "file_count": 4,
+          "total_bytes": 31
+        },
+        "pointers": {
+          "evidence_pointer": "vera://dataset-conformance/redacted-paths-v1"
+        },
+        "receipt_id": "1a352476e7287d2922ef0bcf70d55fcfd57e9efc59addb40f36ae1e81e63e6e2bc7b13f1d6e1655f970c4d005494be33bbb261fa25d1c4d552b110598c1ffca3"
+      }
+    },
+    {
+      "case_id": "zero-byte-v1",
+      "bundle": {
+        "bundle_version": "v1",
+        "hash_contract": {
+          "contract_id": "hf-contract-v1",
+          "frame": "hf:frame:v1",
+          "canonical_json": "hf:canonical-json:v1",
+          "algorithm": "sha3-512",
+          "encoding": "hex_lower"
+        },
+        "dataset_identity": {
+          "dataset_key": "conformance.dataset.zero-byte.v1",
+          "version_label": "v1",
+          "program": "conformance"
+        },
+        "rules": {
+          "path_normalization": "posix_rel_no_dotdot",
+          "follow_symlinks": false,
+          "redact_paths": false,
+          "ordering": "path_rel_ascii_asc",
+          "merkle_rule": "dup_last_on_odd"
+        },
+        "files": [
+          {
+            "path_rel": "empty.txt",
+            "bytes": 0,
+            "sha3_512": "a69f73cca23a9ac5c8b567dc185a756e97c982164fe25859e0d1dcc1475c80a615b2123af1f5f94c11e3e9402c3ac558f500199d95b6d3e301758586281dcd26",
+            "leaf_hash": "cc768817c0e4f677e682078fc8e41e394d3e8e0d7dc2edeb7209b9650f611ee220b93cf95100a5756cac7c2fbbeb9712f724c906bc261abaf0fb7dcea7fc3f66"
+          },
+          {
+            "path_rel": "marker.txt",
+            "bytes": 7,
+            "sha3_512": "32cf09cf9eabc301b949985f2beb64ae57ee39e2a3b65e4eaf5a694a4a0f50ead43db6e469071473835240e3c982e17ae1d4c0fe5b0babf2f8c06edcfd57c903",
+            "leaf_hash": "c5ca25bfa8564b8224701bd0dc65d5d2a67ba4730c7ed296e0229801fb778b0f63a04c256ae985f60708c328043259e7736c6bb867fef7976213a43acd411376"
+          }
+        ],
+        "merkle": {
+          "leaf_count": 2,
+          "root": "c4ceaf8148720c18ee6cbb232ad481caac88bef8492d7f9b88502dcf4970f2c9da3290dfb9c1384e4640515b290c94f76d0453fd1b6aa9d0a3d95af41e56af5b"
+        },
+        "summary": {
+          "file_count": 2,
+          "total_bytes": 7
+        }
+      },
+      "bundle_expectations": {
+        "dataset_key": "conformance.dataset.zero-byte.v1",
+        "dataset_fingerprint": "01bdfcb5cb479cc2b54a563d0cbb073223531b03bc97fd27f679096ac6f5896c7d1feeea61ce4abe8ad16cc82c81b155aeff2fa3ba708638aa536c57f986dc55",
+        "bundle_digest": "b31c49f26fdca542c1e902c7466807d752083afa2e5693f65943b6ae2a73561dd0e2ba0a367f33d351da23b586083ec62d2a449f88451b94c1e0bad774c8c8cf",
+        "merkle_root": "c4ceaf8148720c18ee6cbb232ad481caac88bef8492d7f9b88502dcf4970f2c9da3290dfb9c1384e4640515b290c94f76d0453fd1b6aa9d0a3d95af41e56af5b",
+        "idempotency_key": "c40d8f0857cf514bb966c71b50911ae9a674722a7268e50ebedf12a3a5e09c2ee194f90f9dfea1c2e76782bdce86d05b396c3790c471d5c385744452b9a0f793"
+      },
+      "hash_only_receipt": {
+        "v": "v1",
+        "kind": "dataset_anchor_receipt",
+        "mode": "hash_only",
+        "dataset_identity": {
+          "dataset_key": "conformance.dataset.zero-byte.v1",
+          "version_label": "v1",
+          "program": "conformance"
+        },
+        "rules": {
+          "path_normalization": "posix_rel_no_dotdot",
+          "follow_symlinks": false,
+          "redact_paths": false,
+          "ordering": "path_rel_ascii_asc",
+          "merkle_rule": "dup_last_on_odd"
+        },
+        "evidence": {
+          "dataset_fingerprint": "01bdfcb5cb479cc2b54a563d0cbb073223531b03bc97fd27f679096ac6f5896c7d1feeea61ce4abe8ad16cc82c81b155aeff2fa3ba708638aa536c57f986dc55",
+          "bundle_digest": "b31c49f26fdca542c1e902c7466807d752083afa2e5693f65943b6ae2a73561dd0e2ba0a367f33d351da23b586083ec62d2a449f88451b94c1e0bad774c8c8cf",
+          "merkle_root": "c4ceaf8148720c18ee6cbb232ad481caac88bef8492d7f9b88502dcf4970f2c9da3290dfb9c1384e4640515b290c94f76d0453fd1b6aa9d0a3d95af41e56af5b",
+          "idempotency_key": "c40d8f0857cf514bb966c71b50911ae9a674722a7268e50ebedf12a3a5e09c2ee194f90f9dfea1c2e76782bdce86d05b396c3790c471d5c385744452b9a0f793",
+          "file_count": 2,
+          "total_bytes": 7
+        },
+        "pointers": {
+          "evidence_pointer": "vera://dataset-conformance/zero-byte-v1"
+        },
+        "receipt_id": "49f8c28006276dc367bdb0f901c31b0ab868fe2b78b0cc3b4b0429b99c10f3df330d3b50c2fcda44b54066805f3b63a7db6eaa850f491c8df9057086f281cedf"
+      }
+    }
+  ]
+}

@@ -1,0 +1,105 @@
+{
+  "dataset": {
+    "basic-v1": [
+      {
+        "path_rel": "hello.txt",
+        "content_base64": "aGVsbG8gd29ybGQK"
+      }
+    ],
+    "realistic-multifile-v1": [
+      {
+        "path_rel": "metadata/labels.json",
+        "content_base64": "eyJsYWJlbHMiOlsiYWxwaGEiLCJiZXRhIl0sInZlcnNpb24iOjF9Cg=="
+      },
+      {
+        "path_rel": "README.md",
+        "content_base64": "IyBDb25mb3JtYW5jZSBkYXRhc2V0CgpEZXRlcm1pbmlzdGljIGZpeHR1cmUgZm9yIFZlcmEgQW5jaG9yIERhdGFzZXQgdjEuCg=="
+      },
+      {
+        "path_rel": "nested/config/settings.json",
+        "content_base64": "eyJlbmFibGVkIjp0cnVlLCJ0aHJlc2hvbGQiOjAuNzV9Cg=="
+      },
+      {
+        "path_rel": "data/observations.csv",
+        "content_base64": "aWQsdmFsdWUsbGFiZWwKMSwxMC41LGFscGhhCjIsMTEuMCxiZXRhCjMsOS43NSxhbHBoYQo="
+      }
+    ],
+    "redacted-paths-v1": [
+      {
+        "path_rel": "z-last.txt",
+        "content_base64": "bGFzdAo="
+      },
+      {
+        "path_rel": "Alpha File.txt",
+        "content_base64": "YWxwaGEK"
+      },
+      {
+        "path_rel": "nested/deeper/result.json",
+        "content_base64": "eyJvayI6dHJ1ZX0K"
+      },
+      {
+        "path_rel": "nested/data.csv",
+        "content_base64": "YSxiCjEsMgo="
+      }
+    ],
+    "zero-byte-v1": [
+      {
+        "path_rel": "empty.txt",
+        "content_base64": ""
+      },
+      {
+        "path_rel": "marker.txt",
+        "content_base64": "bWFya2VyCg=="
+      }
+    ]
+  },
+  "ingest": {
+    "json-v1": {
+      "kind": "json",
+      "value": {
+        "alpha": 1,
+        "beta": [
+          "x",
+          2
+        ],
+        "nested": {
+          "enabled": true
+        }
+      }
+    },
+    "text-v1": {
+      "kind": "text",
+      "text": "Vera Anchor ingest conformance.\nLine two.\n",
+      "media_type": "text/plain"
+    },
+    "file-v1": {
+      "kind": "file",
+      "file": {
+        "path_rel": "artifact.bin",
+        "content_base64": "dmVyYS1hbmNob3ItaW5nZXN0LWZpbGUtdjEAYmluYXJ5LW1hcmtlcg=="
+      }
+    },
+    "file-set-v1": {
+      "kind": "file_set",
+      "files": [
+        {
+          "path_rel": "a/alpha.txt",
+          "content_base64": "YWxwaGENCmJldGENCg=="
+        },
+        {
+          "path_rel": "b/data.csv",
+          "content_base64": "eCx5CjEsMgo="
+        },
+        {
+          "path_rel": "empty.txt",
+          "content_base64": ""
+        }
+      ],
+      "rules": {
+        "follow_symlinks": false,
+        "redact_paths": true,
+        "normalize_line_endings": true
+      }
+    }
+  }
+}

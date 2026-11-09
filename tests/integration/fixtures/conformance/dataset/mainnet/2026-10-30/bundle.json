@@ -1,0 +1,38 @@
+{
+  "bundle_version": "v1",
+  "hash_contract": {
+    "contract_id": "hf-contract-v1",
+    "frame": "hf:frame:v1",
+    "canonical_json": "hf:canonical-json:v1",
+    "algorithm": "sha3-512",
+    "encoding": "hex_lower"
+  },
+  "dataset_identity": {
+    "dataset_key": "07be0cf7-4cab-40ca-aa70-87840df4d3e7.example.verification.demo.v1",
+    "version_label": "v1",
+    "program": "example"
+  },
+  "rules": {
+    "path_normalization": "posix_rel_no_dotdot",
+    "follow_symlinks": false,
+    "redact_paths": true,
+    "ordering": "path_rel_ascii_asc",
+    "merkle_rule": "dup_last_on_odd"
+  },
+  "files": [
+    {
+      "path_hash": "34880399ee7d0ec954d94f6a26282f13898d005727056318a70d37475e94da626ea0411c74eef9d9f83fdb0b7202294d700d82b695daad7f91346c5b16e9228d",
+      "bytes": 32786,
+      "sha3_512": "04fb07f43cd1d4e89a39090eca8918b584377d4739f4f06888ecf7d1ba0ea27bf118c3c9d75c5bc6cf09c5cee32a5c20db65b6a4ee756b647ce0b597af761058",
+      "leaf_hash": "d9a3fd8af269f1804865d0128826f60af25102660688af45e0dedd621d6c6a0877a254c7d175c5a407359f92176b3c7666a820834968be7c00671959e0c3e057"
+    }
+  ],
+  "merkle": {
+    "leaf_count": 1,
+    "root": "d9a3fd8af269f1804865d0128826f60af25102660688af45e0dedd621d6c6a0877a254c7d175c5a407359f92176b3c7666a820834968be7c00671959e0c3e057"
+  },
+  "summary": {
+    "file_count": 1,
+    "total_bytes": 32786
+  }
+}

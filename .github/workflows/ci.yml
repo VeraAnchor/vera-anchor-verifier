@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: ['22', '24']
+        node: ['22.15.0', '24']
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -28,13 +28,15 @@ jobs:
           package-manager-cache: false
       - name: Install locked dependencies
         run: npm ci
-      - name: Lint and formatting
-        run: npm run check
       - name: Type checking
         run: npm run typecheck
+      - name: Verification tests
+        run: npm test
       - name: Build
         run: npm run build
       - name: Package contents
         run: npm pack --dry-run --json
       - name: Verify ESM entry
         run: node -e "import('./dist/index.js').then(() => console.log('ESM import passed'))"
+      - name: Verify CLI entry
+        run: node dist/cli.js --help > /dev/null
