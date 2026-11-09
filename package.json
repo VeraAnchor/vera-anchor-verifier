@@ -1,6 +1,6 @@
 {
   "name": "@veraanchor/verifier",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Independent, read-only verification of Vera Anchor evidence and supported HCS records",
   "license": "MIT",
   "type": "module",
