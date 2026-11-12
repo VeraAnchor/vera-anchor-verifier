@@ -20,7 +20,7 @@ Release qualification includes:
 - portable report validation and policy evaluation;
 - positive and adversarial cases for supported commitment and resolver boundaries.
 
-Live tests depend on external public services and therefore validate both the verifier and the continued availability of the pinned public evidence. A live service outage is not treated as a successful verification result.
+Live tests depend on external public services and therefore validate both the verifier's live acquisition and verification paths and the continued availability of the pinned public evidence. A live service outage or unavailable observation is not treated as a successful verification result.
 
 Authenticated integration tests are hermetic and do not require production Vera Anchor credentials. External Core and Mirror transport is simulated at the HTTP boundary while the SDK's authentication, resolution, verification, triangulation, reporting, and policy code executes normally.
 
@@ -36,10 +36,18 @@ Test authorization material must be explicitly non-production and must not authe
 
 Offline fixtures are expected to produce deterministic results from the same bytes and caller-supplied intent. Networked conformance uses exact references and explicit network selection; it must not silently substitute a different Hedera network, latest registry state or unrelated public record.
 
-The repository test suite is part of release qualification:
+The deterministic repository test suite is part of the ordinary release qualification and CI gate:
 
 ```sh
 npm test
 ```
+
+Live public conformance is run separately because it depends on externally available Vera Anchor Explorer and Hedera Mirror observations:
+
+```sh
+npm run test:live
+```
+
+The live conformance suite preserves fail-closed verification semantics. External service unavailability, unresolved evidence or acquisition timeouts must not be converted into successful verification results. A live-conformance failure therefore may identify either a verification regression or the inability to acquire required public evidence and should be investigated accordingly.
 
 A release also requires the package build and external-consumer checks described in the repository release process.

@@ -13,7 +13,7 @@ import {
 } from "../../src/index.js";
 import type { ExecutionV1Input } from "../../src/profiles/execution/verificationV1.js";
 
-/** Pinned October 21, 2026 mainnet conformance. Runs in the ordinary Vitest suite. */
+/** Pinned October 21, 2026 mainnet live conformance. */
 const JOB = "4e4f624d-25b6-577f-93c6-075292e722d6";
 const RESULT = "b7e96d64-c2b0-5739-90e5-36cfeecc95bb";
 const NETWORK = "mainnet" as const;
@@ -456,7 +456,7 @@ describe("SAGE mainnet conformance: 2026-10-21 pinned execution", () => {
     expect(summary(workflow.report), diagnostics).toEqual([]);
     expect(validatePortableVerificationReportV1(workflow.report).status)
       .toBe("valid");
-  });
+  }, LIVE_TEST_TIMEOUT_MS);
 
   it("LIVE-S06 rejects contradictory reliance scope without performing any network I/O", async () => {
     const sample = await pinned();

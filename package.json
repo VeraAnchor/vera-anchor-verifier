@@ -45,7 +45,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "check": "biome check .",
     "format": "biome check --write .",
-    "test": "vitest run",
+    "test": "vitest run --exclude \"tests/integration/*LiveConformance*.int.test.ts\"",
+    "test:live": "vitest run tests/integration/datasetMainnetLiveConformance.int.test.ts tests/integration/ingestMainnetLiveConformance.int.test.ts tests/integration/sageLiveConformanceV1.int.test.ts --no-file-parallelism",
     "test:watch": "vitest",
     "prepack": "npm run build"
   },

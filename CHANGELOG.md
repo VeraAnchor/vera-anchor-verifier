@@ -2,7 +2,7 @@
 
 All notable changes to `@veraanchor/verifier` are documented here.
 
-## [Unreleased]
+## [0.2.0] - 2026-11-12
 
 ### Added
 
@@ -11,6 +11,11 @@ All notable changes to `@veraanchor/verifier` are documented here.
 - Authenticated Dataset and Ingest portable-report and policy workflows.
 - Hermetic authenticated integration coverage for authorization failure, Mirror unavailability, Core/Hedera conflicts, local commitment contradictions, and credential isolation.
 - Offline, policy, and authenticated Ingest examples, plus an authenticated Dataset example.
+
+### Changed
+
+- Separated deterministic repository tests from live public conformance so ordinary CI does not depend on Vera Anchor Explorer or Hedera Mirror availability.
+- Added an explicit live-conformance test command for pinned Dataset, Ingest and SAGE mainnet verification.
 
 ### Security
 
