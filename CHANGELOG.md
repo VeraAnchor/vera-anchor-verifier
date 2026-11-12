@@ -16,6 +16,7 @@ All notable changes to `@veraanchor/verifier` are documented here.
 
 - Separated deterministic repository tests from live public conformance so ordinary CI does not depend on Vera Anchor Explorer or Hedera Mirror availability.
 - Added an explicit live-conformance test command for pinned Dataset, Ingest and SAGE mainnet verification.
+- Added functional top-level CLI help for `--help`, `-h`, and `help`, with successful exit status while preserving malformed-input exit behavior.
 
 ### Security
 

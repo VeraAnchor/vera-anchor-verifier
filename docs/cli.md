@@ -4,6 +4,16 @@ The `vera-anchor` executable is installed with `@veraanchor/verifier`.
 
 After installing the package, run commands with `npx vera-anchor`. Contributors working from a source checkout may build the package with `npm run build` and invoke `node dist/cli.js` directly.
 
+Top-level help is available without loading evidence or performing network I/O:
+
+```text
+npx vera-anchor --help
+npx vera-anchor -h
+npx vera-anchor help
+```
+
+Help writes human-readable usage information to stdout and exits successfully.
+
 Dataset verification defaults to **offline**. Public verification is always explicit. Ingest and SAGE execution support both offline and public workflows, while independent SAGE HCS standards verification is a separate networked workflow.
 
 Authenticated Dataset and Ingest verification is exposed through the library API, not the CLI. The CLI does not accept Vera Anchor private-evidence credentials.
@@ -226,11 +236,11 @@ HTTPS is required except for HTTP loopback development endpoints.
 
 ## CLI result and exit codes
 
-The CLI writes one JSON object to stdout using `schema_version: "va.verifier-cli-result.v1"`. Successful command execution returns either `{command,result}` or `{error:{code}}` according to the CLI contract. Raw source bytes and credentials are not included in the result envelope.
+Verification, report, and policy commands write one JSON object to stdout using `schema_version: "va.verifier-cli-result.v1"`. Command execution returns either `{command,result}` or `{error:{code}}` according to the CLI contract. Top-level help is human-readable and does not use the result envelope. Raw source bytes and credentials are not included in command result envelopes.
 
 Exit codes:
 
-- `0` — `allow`, or a valid saved report for `report validate`.
+- `0` — help, `allow`, or a valid saved report for `report validate`.
 - `1` — `deny`, or an invalid saved report.
 - `2` — `review`.
 - `64` — malformed command or input.

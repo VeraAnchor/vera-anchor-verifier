@@ -43,6 +43,22 @@ function evidence() {
 }
 
 describe("offline verifier CLI", () => {
+  it("prints top-level help successfully without weakening malformed-input handling", async () => {
+    for (const args of [["--help"], ["-h"], ["help"]]) {
+      const lines: string[] = [];
+      const code = await runVerifierCliV1(args, (line) => lines.push(line));
+      expect(code).toBe(0);
+      expect(lines).toHaveLength(1);
+      expect(lines[0]).toContain("Usage: vera-anchor <command> [options]");
+      expect(lines[0]).toContain("verify dataset");
+      expect(lines[0]).toContain("verify standards");
+      expect(lines[0]).toContain("policy assess");
+      expect(lines[0]).not.toContain("CLI_INPUT_INVALID");
+    }
+
+    expect((await command([])).code).toBe(64);
+    expect((await command(["--unknown"])).code).toBe(64);
+  });
   it("invokes real SAGE verification and applies independent policy scope", async () => sandbox(async (dir) => {
     const e = await save(dir, "e.json", evidence());
     const i = await save(dir, "i.json", intent);

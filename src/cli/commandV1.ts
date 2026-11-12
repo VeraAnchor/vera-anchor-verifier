@@ -19,6 +19,20 @@ const CLI_SCHEMA = "va.verifier-cli-result.v1";
 const MAX_JSON_BYTES = 2 * 1024 * 1024;
 const MAX_SOURCE_BYTES = 1024 * 1024 * 1024;
 const MAX_FILES = 256;
+const CLI_HELP = [
+  "Usage: vera-anchor <command> [options]",
+  "",
+  "Commands:",
+  "  verify dataset      Verify Dataset evidence",
+  "  verify ingest       Verify Ingest evidence",
+  "  verify execution    Verify execution evidence",
+  "  verify standards    Verify supported HCS standards",
+  "  report validate     Validate a portable verification report",
+  "  policy assess       Assess a portable report under a policy",
+  "",
+  "Run with --help, -h, or help to display this message.",
+  "See docs/cli.md for command options, inputs, and exit codes.",
+].join("\n");
 const COMMANDS = {
   "verify dataset": ["bundle", "sources", "source-root", "intent", "policy", "receipt",
     "mode", "explorer-url", "mirror-url", "report-out"],
@@ -328,6 +342,11 @@ async function saveReport(path: string, report: PortableVerificationReportV1): P
 
 /** CLI adapter only. Never accepts a caller flag claiming a report was SDK-verified. */
 export async function runVerifierCliV1(argv: readonly string[], emit: Emitter): Promise<number> {
+  if (argv.length === 1 &&
+      (argv[0] === "--help" || argv[0] === "-h" || argv[0] === "help")) {
+    emit(CLI_HELP);
+    return 0;
+  }
   try {
     const { command, options } = parseArgs(argv);
     let result: unknown;
